@@ -5,7 +5,7 @@ import { RosterInput } from '../components/divider/RosterInput';
 import { DividerControls } from '../components/divider/DividerControls';
 import { DividedTeamsGrid } from '../components/divider/DividedTeamsGrid';
 import { DividerActions } from '../components/divider/DividerActions';
-import { CaseShowcase, ScenarioPreset } from '../components/divider/CaseShowcase';
+import { Showcase, ScenarioPreset } from '../components/divider/Showcase';
 import { HowToSection } from '../components/seo/HowToSection';
 import { FaqSection } from '../components/seo/FaqSection';
 import { SchemaScript } from '../components/seo/SchemaScript';
@@ -265,8 +265,8 @@ function IndexPage() {
           </div>
         </div>
 
-        {/* 精品页 2.0: CaseShowcase 场景案例库 */}
-        <CaseShowcase onApplyScenario={handleApplyScenario} />
+        {/* 精品页 2.0: Showcase 场景案例库 */}
+        <Showcase onApplyScenario={handleApplyScenario} />
 
         {/* 精品页 2.0: How-To 图文指南 */}
         <HowToSection

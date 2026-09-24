@@ -59,11 +59,11 @@ export const SCENARIO_PRESETS: ScenarioPreset[] = [
   },
 ];
 
-export interface CaseShowcaseProps {
+export interface ShowcaseProps {
   onApplyScenario: (scenario: ScenarioPreset) => void;
 }
 
-export const CaseShowcase: React.FC<CaseShowcaseProps> = ({ onApplyScenario }) => {
+export const Showcase: React.FC<ShowcaseProps> = ({ onApplyScenario }) => {
   return (
     <section className="mt-14 space-y-6">
       <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -149,3 +149,7 @@ export const CaseShowcase: React.FC<CaseShowcaseProps> = ({ onApplyScenario }) =
     </section>
   );
 };
+
+// 兼容别名
+export type CaseShowcaseProps = ShowcaseProps;
+export const CaseShowcase = Showcase;
