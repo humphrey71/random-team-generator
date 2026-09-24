@@ -34,7 +34,7 @@ export const LeaguePickerHeader: React.FC<LeaguePickerHeaderProps> = ({
             </Badge>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Filter by conference or draw from the entire {leagueShortName} franchise pool.
+            Filter by conference ({filteredCount} of {totalTeams} shown) or draw from the entire {leagueShortName} franchise pool.
           </p>
         </div>
 

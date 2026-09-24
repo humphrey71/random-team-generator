@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { useState, useRef, useMemo } from 'react';
+import { createFileRoute, Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { Container } from '../components/layout/Container';
 import { RosterInput } from '../components/divider/RosterInput';
 import { DividerControls } from '../components/divider/DividerControls';
@@ -12,7 +12,7 @@ import { SchemaScript } from '../components/seo/SchemaScript';
 import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { divideTeams, parseNamesInput } from '../lib/team-divider';
 import { DividerMode, TeamResult } from '../data/types';
-import { Sparkles, Trophy, ShieldCheck, Zap } from 'lucide-react';
+import { Trophy, ShieldCheck, Zap } from 'lucide-react';
 
 const DEFAULT_SAMPLE_NAMES = [
   'Alex', 'Blake', 'Chris', 'Dana', 'Evan',
@@ -29,16 +29,16 @@ export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): IndexSearchParams => {
     return {
       names: typeof search.names === 'string' ? search.names : undefined,
-      mode: search.mode === 'by-size' ? 'by-size' : 'by-teams',
-      val: Number(search.val) > 0 ? Number(search.val) : 2,
+      mode: search.mode === 'by-size' ? 'by-size' : undefined,
+      val: typeof search.val === 'number' ? search.val : undefined,
     };
   },
   component: IndexPage,
 });
 
 function IndexPage() {
-  const search = Route.useSearch();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const search = (useSearch({ strict: false }) || {}) as IndexSearchParams;
+  const navigate = useNavigate();
 
   const initialRawText = useMemo(() => {
     if (search.names) {
@@ -88,7 +88,7 @@ function IndexPage() {
         names: parsedNames.slice(0, 30).join(','),
         mode,
         val,
-      },
+      } as any,
       replace: true,
     });
   };
@@ -109,7 +109,7 @@ function IndexPage() {
         names: scenario.names.slice(0, 30).join(','),
         mode: scenario.mode,
         val: scenario.value,
-      },
+      } as any,
       replace: true,
     });
   };

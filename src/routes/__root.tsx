@@ -1,4 +1,3 @@
-import React from 'react';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { SiteHeader } from '../components/layout/SiteHeader';
 import { SiteFooter } from '../components/layout/SiteFooter';

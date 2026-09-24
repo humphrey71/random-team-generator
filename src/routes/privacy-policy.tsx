@@ -1,4 +1,3 @@
-import React from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Container } from '../components/layout/Container';
 import { Shield, ArrowLeft } from 'lucide-react';
