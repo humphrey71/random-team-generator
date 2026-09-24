@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, RotateCcw, Trash2, AlertCircle, GripVertical, X, LayoutGrid, FileText, Check } from 'lucide-react';
+import { Users, RotateCcw, Trash2, AlertCircle, GripVertical, X, LayoutGrid, FileText } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { parseNamesInput } from '../../lib/team-divider';
 import { setCustomDragGhost } from '../../lib/drag-helper';
@@ -152,34 +152,30 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                           handleChipDragStart(e, name);
                         }
                       }}
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all select-none group ${
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all select-none group bg-white border border-slate-200 shadow-xs ${
                         isAssigned
-                          ? 'bg-slate-100 border border-dashed border-slate-300 text-slate-400 opacity-60 cursor-not-allowed shadow-none'
-                          : 'bg-white border border-slate-200 text-slate-800 shadow-xs hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20 hover:bg-brand-50/40 cursor-grab active:cursor-grabbing'
+                          ? 'cursor-default'
+                          : 'hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20 hover:bg-brand-50/40 cursor-grab active:cursor-grabbing'
                       }`}
                       title={
                         isAssigned
-                          ? 'Already assigned to a team. Cannot drag from here. Move or remove from team card instead.'
+                          ? 'Assigned to a team. Cannot drag from here. Move or reorder directly in team card.'
                           : 'Drag and drop this person into any team on the right'
                       }
                     >
-                      {!isAssigned ? (
+                      {!isAssigned && (
                         <div className="p-0.5 rounded text-brand-600 bg-brand-50 group-hover:bg-brand-100 transition-colors">
                           <GripVertical className="w-3 h-3 stroke-[2.5]" />
                         </div>
-                      ) : (
-                        <span className="p-0.5 text-emerald-600 font-bold" title="In Team">
-                          <Check className="w-3 h-3 stroke-[3]" />
-                        </span>
                       )}
 
-                      <span className={`font-semibold ${isAssigned ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                      <span className="font-semibold text-slate-900">
                         {name}
                       </span>
 
                       {isAssigned && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          In Team
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          ✓ In Team
                         </span>
                       )}
 

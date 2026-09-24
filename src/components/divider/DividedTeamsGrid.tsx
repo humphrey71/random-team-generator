@@ -94,6 +94,12 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
     memberIndex: number,
     name: string
   ) => {
+    // If pinned / locked, cannot be moved or dragged at all
+    if (teams[teamIndex]?.lockedIndices?.includes(memberIndex)) {
+      e.preventDefault();
+      return;
+    }
+
     setDraggedItem({ teamIndex, memberIndex, name });
     const payload = {
       type: 'team-member',
@@ -135,6 +141,56 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
     e.dataTransfer.dropEffect = 'move';
     setDropSlotIndicator({ teamIndex, memberIndex });
     setActiveDropTeamIndex(teamIndex);
+  };
+
+  // Helper to reassemble team members guaranteeing pinned slots stay at their exact indices
+  const reassembleWithLocks = (
+    unlockedMembers: string[],
+    fixedLocks: Map<number, string>
+  ) => {
+    const sortedLockedSlots = Array.from(fixedLocks.entries()).sort(
+      (a, b) => a[0] - b[0]
+    );
+    if (sortedLockedSlots.length === 0) {
+      return { members: unlockedMembers, lockedIndices: [] as number[] };
+    }
+
+    const totalCount = unlockedMembers.length + sortedLockedSlots.length;
+    const result: (string | null)[] = Array(totalCount).fill(null);
+    const lockedIndices: number[] = [];
+
+    // Strictly place locked members at their original slot index
+    for (const [slot, name] of sortedLockedSlots) {
+      if (slot < totalCount) {
+        result[slot] = name;
+        lockedIndices.push(slot);
+      }
+    }
+
+    // Fallback for overflow slots
+    for (const [, name] of sortedLockedSlots) {
+      if (!result.includes(name)) {
+        const freeIdx = result.indexOf(null);
+        if (freeIdx !== -1) {
+          result[freeIdx] = name;
+          lockedIndices.push(freeIdx);
+        }
+      }
+    }
+
+    // Fill remaining null slots with unlocked members in order
+    let uIdx = 0;
+    for (let i = 0; i < totalCount; i++) {
+      if (result[i] === null && uIdx < unlockedMembers.length) {
+        result[i] = unlockedMembers[uIdx++];
+      }
+    }
+
+    const finalMembers = result.filter((m): m is string => m !== null);
+    return {
+      members: finalMembers,
+      lockedIndices: lockedIndices.sort((a, b) => a - b),
+    };
   };
 
   // Move or reorder logic
@@ -195,54 +251,112 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
       const targetTeam = newTeams[targetTeamIndex];
       const sourceIdx = payload.sourceMemberIndex;
 
+      // Pinned/locked members can NEVER be dragged or moved away
+      if (sourceTeam.lockedIndices?.includes(sourceIdx)) {
+        return;
+      }
+
       // Same team reordering
       if (payload.sourceTeamIndex === targetTeamIndex) {
         if (targetSlotIndex === null || targetSlotIndex === sourceIdx) return;
-        const [movedMember] = sourceTeam.members.splice(sourceIdx, 1);
-        const destination =
-          targetSlotIndex > sourceIdx ? targetSlotIndex - 1 : targetSlotIndex;
-        sourceTeam.members.splice(destination, 0, movedMember);
 
-        // Update lockedIndices positions if applicable
-        if (sourceTeam.lockedIndices && sourceTeam.lockedIndices.length > 0) {
-          sourceTeam.lockedIndices = sourceTeam.lockedIndices
-            .map(idx => {
-              if (idx === sourceIdx) return destination;
-              if (sourceIdx < destination && idx > sourceIdx && idx <= destination)
-                return idx - 1;
-              if (sourceIdx > destination && idx >= destination && idx < sourceIdx)
-                return idx + 1;
-              return idx;
-            })
-            .sort((a, b) => a - b);
+        // Collect locked map and unlocked list
+        const fixedLocks = new Map<number, string>();
+        (sourceTeam.lockedIndices || []).forEach(lIdx => {
+          if (sourceTeam.members[lIdx]) {
+            fixedLocks.set(lIdx, sourceTeam.members[lIdx]);
+          }
+        });
+
+        // Filter out moving unlocked member
+        const unlocked = sourceTeam.members.filter(
+          (_, idx) => !fixedLocks.has(idx) && idx !== sourceIdx
+        );
+
+        // Calculate insert index relative to unlocked items
+        let insertPos = 0;
+        for (let i = 0; i < targetSlotIndex; i++) {
+          if (!fixedLocks.has(i) && i !== sourceIdx) {
+            insertPos++;
+          }
         }
+        unlocked.splice(insertPos, 0, memberName);
+
+        // Reassemble with locked slots strictly pinned
+        const reassembled = reassembleWithLocks(unlocked, fixedLocks);
+        sourceTeam.members = reassembled.members;
+        sourceTeam.lockedIndices = reassembled.lockedIndices;
       } else {
-        // Cross-team move
-        const wasLocked = sourceTeam.lockedIndices?.includes(sourceIdx);
-        sourceTeam.members.splice(sourceIdx, 1);
-        if (sourceTeam.lockedIndices) {
-          sourceTeam.lockedIndices = sourceTeam.lockedIndices
-            .filter(idx => idx !== sourceIdx)
-            .map(idx => (idx > sourceIdx ? idx - 1 : idx));
-        }
+        // Cross-team move: remove from sourceTeam preserving sourceTeam's locks
+        const sourceLocks = new Map<number, string>();
+        (sourceTeam.lockedIndices || []).forEach(lIdx => {
+          if (sourceTeam.members[lIdx]) {
+            sourceLocks.set(lIdx, sourceTeam.members[lIdx]);
+          }
+        });
 
-        const destination =
-          targetSlotIndex !== null ? targetSlotIndex : targetTeam.members.length;
-        targetTeam.members.splice(destination, 0, memberName);
+        const sourceUnlocked = sourceTeam.members.filter(
+          (_, idx) => !sourceLocks.has(idx) && idx !== sourceIdx
+        );
+        const reassembledSource = reassembleWithLocks(sourceUnlocked, sourceLocks);
+        sourceTeam.members = reassembledSource.members;
+        sourceTeam.lockedIndices = reassembledSource.lockedIndices;
 
-        if (wasLocked) {
-          targetTeam.lockedIndices = [
-            ...(targetTeam.lockedIndices || []),
-            destination,
-          ].sort((a, b) => a - b);
+        // Insert into targetTeam preserving targetTeam's locks
+        const targetLocks = new Map<number, string>();
+        (targetTeam.lockedIndices || []).forEach(lIdx => {
+          if (targetTeam.members[lIdx]) {
+            targetLocks.set(lIdx, targetTeam.members[lIdx]);
+          }
+        });
+
+        const targetUnlocked = targetTeam.members.filter(
+          (_, idx) => !targetLocks.has(idx)
+        );
+
+        let insertPos = targetUnlocked.length;
+        if (targetSlotIndex !== null) {
+          insertPos = 0;
+          for (let i = 0; i < targetSlotIndex; i++) {
+            if (!targetLocks.has(i)) {
+              insertPos++;
+            }
+          }
         }
+        targetUnlocked.splice(insertPos, 0, memberName);
+
+        const reassembledTarget = reassembleWithLocks(targetUnlocked, targetLocks);
+        targetTeam.members = reassembledTarget.members;
+        targetTeam.lockedIndices = reassembledTarget.lockedIndices;
       }
     } else if (payload.type === 'roster-chip') {
       // Case 2: Dragged from parsed roster chips pool
       const targetTeam = newTeams[targetTeamIndex];
-      const destination =
-        targetSlotIndex !== null ? targetSlotIndex : targetTeam.members.length;
-      targetTeam.members.splice(destination, 0, memberName);
+      const targetLocks = new Map<number, string>();
+      (targetTeam.lockedIndices || []).forEach(lIdx => {
+        if (targetTeam.members[lIdx]) {
+          targetLocks.set(lIdx, targetTeam.members[lIdx]);
+        }
+      });
+
+      const targetUnlocked = targetTeam.members.filter(
+        (_, idx) => !targetLocks.has(idx)
+      );
+
+      let insertPos = targetUnlocked.length;
+      if (targetSlotIndex !== null) {
+        insertPos = 0;
+        for (let i = 0; i < targetSlotIndex; i++) {
+          if (!targetLocks.has(i)) {
+            insertPos++;
+          }
+        }
+      }
+      targetUnlocked.splice(insertPos, 0, memberName);
+
+      const reassembledTarget = reassembleWithLocks(targetUnlocked, targetLocks);
+      targetTeam.members = reassembledTarget.members;
+      targetTeam.lockedIndices = reassembledTarget.lockedIndices;
     }
 
     onTeamsChange(newTeams);
@@ -372,10 +486,14 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                         return (
                           <li
                             key={`${member}-${mIdx}`}
-                            draggable
-                            onDragStart={e =>
-                              handleMemberDragStart(e, tIdx, mIdx, member)
-                            }
+                            draggable={!isLocked}
+                            onDragStart={e => {
+                              if (isLocked) {
+                                e.preventDefault();
+                                return;
+                              }
+                              handleMemberDragStart(e, tIdx, mIdx, member);
+                            }}
                             onDragOver={e =>
                               handleMemberDragOver(e, tIdx, mIdx)
                             }
@@ -383,23 +501,36 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                               e.stopPropagation();
                               executeMove(tIdx, mIdx, e);
                             }}
-                            className={`group relative py-2.5 px-3 rounded-lg border transition-all flex items-center justify-between select-none cursor-grab active:cursor-grabbing ${
-                              isHoveredSlot
-                                ? 'border-t-3 border-t-brand-600 bg-brand-50/60 ring-2 ring-brand-500/20 shadow-md'
-                                : isLocked
-                                  ? 'bg-amber-50/80 border-amber-300/80 shadow-xs'
-                                  : 'bg-white border-slate-200 hover:border-brand-400 hover:bg-brand-50/20 hover:shadow-sm'
+                            className={`group relative py-2.5 px-3 rounded-lg border transition-all flex items-center justify-between select-none ${
+                              isLocked
+                                ? 'cursor-default bg-amber-50/80 border-amber-300/80 shadow-xs'
+                                : isHoveredSlot
+                                  ? 'border-t-3 border-t-brand-600 bg-brand-50/60 ring-2 ring-brand-500/20 shadow-md cursor-grab active:cursor-grabbing'
+                                  : 'bg-white border-slate-200 hover:border-brand-400 hover:bg-brand-50/20 hover:shadow-sm cursor-grab active:cursor-grabbing'
                             }`}
-                            title="Drag handle to reorder within team or move to another team"
+                            title={
+                              isLocked
+                                ? 'Pinned in this team (fixed position, cannot be dragged)'
+                                : 'Drag handle to reorder within team or move to another team'
+                            }
                           >
-                            {/* Member Left Info with Theme-colored Grip */}
+                            {/* Member Left Info with Theme-colored Grip or Fixed Lock Icon */}
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <div
-                                className="p-1 -ml-1 rounded text-brand-600 bg-brand-50/60 group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors shrink-0"
-                                title="Drag handle"
-                              >
-                                <GripVertical className="w-4 h-4 stroke-[2.5]" />
-                              </div>
+                              {isLocked ? (
+                                <div
+                                  className="p-1 -ml-1 rounded text-amber-700 bg-amber-100/90 shrink-0"
+                                  title="Position locked in this team"
+                                >
+                                  <Lock className="w-4 h-4 stroke-[2.5]" />
+                                </div>
+                              ) : (
+                                <div
+                                  className="p-1 -ml-1 rounded text-brand-600 bg-brand-50/60 group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors shrink-0"
+                                  title="Drag handle"
+                                >
+                                  <GripVertical className="w-4 h-4 stroke-[2.5]" />
+                                </div>
+                              )}
                               <span
                                 className={`w-5 h-5 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${
                                   isLocked
