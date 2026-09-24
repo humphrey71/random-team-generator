@@ -15,11 +15,12 @@ describe('SSR Prerender capability', () => {
     expect(html).toContain('Random Team Generator');
     expect(html).toContain('Team 1');
     expect(html).toContain('Team 2');
-    expect(html).toContain('Alex');
-    expect(html).toContain('Blake');
+    expect(html).toContain('Marcus');
+    expect(html).toContain('Sarah');
     expect(html).toContain('How to Split Names into Random Teams');
     expect(html).toContain('Frequently Asked Questions (FAQ)');
     expect(html).toContain('applicationCategory');
+    expect(html).toContain('HowTo');
   });
 
   it('should render NFL page to HTML containing 32 teams information and FAQ', async () => {

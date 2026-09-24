@@ -16,8 +16,8 @@ import { DividerMode, TeamResult, PlayerTier } from '../data/types';
 import { Trophy, ShieldCheck, Zap, Lock, Layers } from 'lucide-react';
 
 const DEFAULT_SAMPLE_NAMES = [
-  'Alex', 'Blake', 'Chris', 'Dana', 'Evan',
-  'Frank', 'Grace', 'Henry', 'Ivy', 'Jack'
+  'Marcus', 'Sarah', 'Leo', 'Maya', 'David',
+  'Chloe', 'Jordan', 'Sam', 'Elena', 'Kai'
 ];
 
 const HOME_FAQ_ITEMS = [
@@ -43,7 +43,7 @@ const HOME_FAQ_ITEMS = [
   },
   {
     question: 'Is there a limit on how many names I can enter?',
-    answer: 'No practical limit! Our client-side algorithm can easily process rosters ranging from 4 friends up to 1,000+ tournament or conference participants in milliseconds without performance loss.',
+    answer: 'There is no practical limit. Whether dividing a 4-player party game or a 100+ player league or school roster, all calculations run in milliseconds directly in your browser. You can paste lists straight from Excel or Google Sheets.',
   },
   {
     question: 'Can I save or share my team split results?',
@@ -259,7 +259,7 @@ function IndexPage() {
             Random Team Generator
           </h1>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            Split any list of names into completely balanced, randomized teams in milliseconds. Designed for classrooms, sports leagues, board games, and group projects.
+            Skip the arguments and manual picking. Split any list of names into balanced, randomized teams in seconds—fair, fast, and dispute-free.
           </p>
         </div>
 
@@ -292,9 +292,9 @@ function IndexPage() {
           <div className="lg:col-span-7 xl:col-span-8 space-y-4">
             <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-2">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+                <div className="text-lg font-bold text-slate-900 tracking-tight">
                   Generated Teams ({teams.length})
-                </h2>
+                </div>
                 <span className="text-xs text-slate-500 font-medium">
                   • {teams.reduce((s, t) => s + t.members.length, 0)} total participants
                 </span>
@@ -334,9 +334,9 @@ function IndexPage() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Cryptographically Fair</h3>
+              <h3 className="text-sm font-bold text-slate-900">100% Truly Random</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Every member has equal probability of placement using Fisher-Yates shuffle.
+                No human bias or favoritism. Every participant has an equal chance of placement.
               </p>
             </div>
           </div>
@@ -347,7 +347,7 @@ function IndexPage() {
             <div>
               <h3 className="text-sm font-bold text-slate-900">Skill-Tier Balancing</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Group players by experience (Captains, Novices) to guarantee balanced talent.
+                Group players by experience (Captains, Beginners) to guarantee balanced talent.
               </p>
             </div>
           </div>
@@ -394,19 +394,19 @@ function IndexPage() {
               to="/random-nfl-team-generator"
               className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
             >
-              NFL Picker (32)
+              Random NFL Team Generator
             </Link>
             <Link
               to="/random-nba-team-generator"
               className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-colors"
             >
-              NBA Picker (30)
+              Random NBA Team Generator
             </Link>
             <Link
               to="/random-mlb-team-generator"
               className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-colors"
             >
-              MLB Picker (30)
+              Random MLB Team Generator
             </Link>
           </div>
         </div>
@@ -456,6 +456,20 @@ function IndexPage() {
           appDescription="Free online random team generator and balanced group divider. Split names into groups by team count or group size instantly."
           appUrl="https://teamgenerator.org/"
           faqItems={HOME_FAQ_ITEMS}
+          howToSteps={[
+            {
+              name: 'Paste Names or Add Skill Tiers',
+              text: 'Type or paste names directly, or click "Add Tier" to categorize players by skill (e.g. Captains, Beginners) for balanced rosters.',
+            },
+            {
+              name: 'Select Grouping Method',
+              text: 'Choose whether you want a specific number of teams or a squad size, then click "Generate Teams" for an instant, mathematically fair distribution.',
+            },
+            {
+              name: 'Fine-Tune, Lock & Export',
+              text: 'Drag players between teams to adjust, click the lock icon to pin key anchors across reshuffles, and export clean PNG image cards.',
+            },
+          ]}
         />
 
       </Container>

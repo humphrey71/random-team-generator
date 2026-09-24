@@ -12,24 +12,24 @@ export const EditorialContent: React.FC = () => {
           Why Use a Random Team Generator Over Manual Picking?
         </h2>
         <p className="leading-relaxed">
-          Selecting groups manually often introduces social friction and anxiety—especially for those picked last. An automated random team generator eliminates favoritism entirely, giving every participant an equal mathematical probability of ending up on any given squad.
+          Manually picking teams or taking turns choosing players often leads to awkward pauses, slow debates, and lopsided rosters. An automated random team generator eliminates guesswork and bias, giving every participant an equal chance of landing on any squad.
         </p>
         <p className="leading-relaxed">
-          Whether organizing recreational sports, classroom workshops, or company hackathons, algorithmic team division ensures every match or project begins from a place of mutual trust and competitive fairness.
+          Whether for recreational soccer, classroom projects, game nights, or office hackathons, letting a tool handle the split saves time, avoids disputes, and gets everyone into the game faster.
         </p>
       </section>
 
-      {/* Section 2: Mathematical Rigor & Remainder Balancing */}
+      {/* Section 2: Fairness & Remainder Balancing */}
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <Scale className="w-6 h-6 text-brand-600 shrink-0" />
-          The Mathematics of Fairness: Fisher-Yates &amp; Balanced Remainders
+          How Fair Randomization &amp; Balanced Remainders Work
         </h2>
         <p className="leading-relaxed">
-          Under the hood, our tool implements the benchmark Fisher-Yates (Knuth) shuffle algorithm in <code>O(n)</code> linear runtime. Unlike basic pseudo-random sorting hacks that introduce non-uniform skew, Fisher-Yates guarantees that all permutations remain statistically indistinguishable in likelihood.
+          Under the hood, we use the proven Fisher-Yates shuffle algorithm. Unlike naive random sorting that creates subtle clustering or uneven odds, Fisher-Yates guarantees true, unbiased randomization every single time you hit shuffle.
         </p>
         <p className="leading-relaxed">
-          In addition, our round-robin remainder distribution solves odd roster counts. When dividing 10 players into 3 squads, inferior tools often create lopsided allocations like 4, 4, and 2. Our algorithm guarantees squad sizes differ by at most one member (yielding 4, 3, and 3) for optimal game balance.
+          We also solve the remainder problem. If you split 10 players into 3 squads, basic division often creates awkward setups like 4, 4, and 2. Our round-robin remainder logic guarantees that squad sizes differ by at most one member—giving you a clean, balanced 4, 3, and 3 distribution.
         </p>
       </section>
 
@@ -37,7 +37,7 @@ export const EditorialContent: React.FC = () => {
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <Layers className="w-6 h-6 text-brand-600 shrink-0" />
-          Method Comparison: Digital Randomizer vs Traditional Picking
+          Method Comparison: Digital Randomizer vs Traditional Methods
         </h2>
 
         <div className="overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
@@ -46,8 +46,8 @@ export const EditorialContent: React.FC = () => {
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-900 font-semibold">
                 <th className="p-4">Selection Technique</th>
                 <th className="p-4">Speed &amp; Setup</th>
-                <th className="p-4">Mathematical Fairness</th>
-                <th className="p-4">Social Friction &amp; Bias</th>
+                <th className="p-4">Fairness</th>
+                <th className="p-4">Dispute-Free</th>
                 <th className="p-4">Share Ready</th>
               </tr>
             </thead>
@@ -58,29 +58,29 @@ export const EditorialContent: React.FC = () => {
                   Our Random Team Generator
                 </td>
                 <td className="p-4 text-emerald-700 font-medium">Instant (&lt; 1 sec)</td>
-                <td className="p-4 text-emerald-700 font-medium">100% Unbiased Fisher-Yates</td>
-                <td className="p-4 text-emerald-700 font-medium">Zero (Fully Automated)</td>
+                <td className="p-4 text-emerald-700 font-medium">100% Unbiased Shuffle</td>
+                <td className="p-4 text-emerald-700 font-medium">Yes (Automated)</td>
                 <td className="p-4 text-emerald-700 font-medium">Yes (One-Click Copy &amp; PNG)</td>
               </tr>
               <tr>
-                <td className="p-4 font-semibold text-slate-800">Team Captains Picking</td>
+                <td className="p-4 font-semibold text-slate-800">Captains Picking Sides</td>
                 <td className="p-4">Slow (5-10 minutes)</td>
-                <td className="p-4 text-rose-600">Poor (Subjective Bias)</td>
-                <td className="p-4 text-rose-600">High (Chosen Last Stigma)</td>
+                <td className="p-4 text-rose-600">Subjective &amp; biased</td>
+                <td className="p-4 text-rose-600">Awkward selection order</td>
                 <td className="p-4">No</td>
               </tr>
               <tr>
                 <td className="p-4 font-semibold text-slate-800">Drawing from a Hat</td>
-                <td className="p-4">Tedious (Cutting Paper)</td>
-                <td className="p-4">Fair if properly mixed</td>
-                <td className="p-4">Low</td>
-                <td className="p-4">No</td>
+                <td className="p-4">Moderate (Needs prep)</td>
+                <td className="p-4">Fair if well mixed</td>
+                <td className="p-4">Yes</td>
+                <td className="p-4">No (Offline only)</td>
               </tr>
               <tr>
                 <td className="p-4 font-semibold text-slate-800">Spreadsheet Formulas</td>
-                <td className="p-4">Moderate (Needs Setup)</td>
+                <td className="p-4">Requires laptop setup</td>
                 <td className="p-4">Fair but uneven remainders</td>
-                <td className="p-4">Low</td>
+                <td className="p-4">Yes</td>
                 <td className="p-4">Cumbersome on mobile</td>
               </tr>
             </tbody>

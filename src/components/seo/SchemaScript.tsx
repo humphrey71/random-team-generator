@@ -1,11 +1,17 @@
 import React from 'react';
 import { FaqItem } from './FaqSection';
 
+export interface SchemaHowToStep {
+  name: string;
+  text: string;
+}
+
 export interface SchemaScriptProps {
   appName: string;
   appDescription: string;
   appUrl: string;
   faqItems?: FaqItem[];
+  howToSteps?: SchemaHowToStep[];
 }
 
 export const SchemaScript: React.FC<SchemaScriptProps> = ({
@@ -13,6 +19,7 @@ export const SchemaScript: React.FC<SchemaScriptProps> = ({
   appDescription,
   appUrl,
   faqItems = [],
+  howToSteps = [],
 }) => {
   const softwareSchema = {
     '@context': 'https://schema.org',
@@ -42,6 +49,19 @@ export const SchemaScript: React.FC<SchemaScriptProps> = ({
     })),
   } : null;
 
+  const howToSchema = howToSteps.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: `How to Use ${appName}`,
+    description: appDescription,
+    step: howToSteps.map((s, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: s.name,
+      text: s.text,
+    })),
+  } : null;
+
   return (
     <>
       <script
@@ -52,6 +72,12 @@ export const SchemaScript: React.FC<SchemaScriptProps> = ({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+      {howToSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
         />
       )}
     </>
