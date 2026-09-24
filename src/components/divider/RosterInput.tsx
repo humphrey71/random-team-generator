@@ -131,11 +131,13 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                     key={`${name}-${idx}`}
                     draggable
                     onDragStart={e => handleChipDragStart(e, name)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 shadow-xs hover:border-brand-400 hover:shadow-sm cursor-grab active:cursor-grabbing transition-all select-none group"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 shadow-xs hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20 hover:bg-brand-50/40 cursor-grab active:cursor-grabbing transition-all select-none group"
                     title="Drag and drop this person into any team on the right"
                   >
-                    <GripVertical className="w-3 h-3 text-slate-300 group-hover:text-brand-500 transition-colors" />
-                    <span>{name}</span>
+                    <div className="p-0.5 rounded text-brand-600 bg-brand-50 group-hover:bg-brand-100 transition-colors">
+                      <GripVertical className="w-3 h-3 stroke-[2.5]" />
+                    </div>
+                    <span className="font-semibold text-slate-900">{name}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveChip(idx)}
