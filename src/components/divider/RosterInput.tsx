@@ -128,17 +128,96 @@ export const RosterInput: React.FC<RosterInputProps> = ({
     onRawTextChange(serializeTiersToText(updated));
   };
 
-  // Chip drag start
-  const handleChipDragStart = (e: React.DragEvent, name: string) => {
+  const [activeDropTierIndex, setActiveDropTierIndex] = useState<number | null>(null);
+
+  // Chip drag start: attach tierName and sourceTierIndex
+  const handleChipDragStart = (
+    e: React.DragEvent,
+    name: string,
+    sourceTierIndex: number,
+    tierName: string
+  ) => {
     e.dataTransfer.setData('text/plain', name);
     e.dataTransfer.setData(
       'application/json',
-      JSON.stringify({ type: 'roster-chip', name })
+      JSON.stringify({
+        type: 'roster-chip',
+        name,
+        sourceTierIndex,
+        tierName,
+      })
     );
     e.dataTransfer.effectAllowed = 'copyMove';
 
     // Set high-visibility custom drag ghost image
     setCustomDragGhost(e, name, 'Assigning');
+  };
+
+  const handleTierDragOver = (e: React.DragEvent, tierIndex: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (activeDropTierIndex !== tierIndex) {
+      setActiveDropTierIndex(tierIndex);
+    }
+  };
+
+  const handleTierDragLeave = (e: React.DragEvent) => {
+    const related = e.relatedTarget as HTMLElement | null;
+    if (!related || !related.closest(`[data-tier-container]`)) {
+      setActiveDropTierIndex(null);
+    }
+  };
+
+  const handleDropOnTier = (e: React.DragEvent, targetTierIndex: number) => {
+    e.preventDefault();
+    setActiveDropTierIndex(null);
+
+    let payload: {
+      type: string;
+      sourceTierIndex?: number;
+      name: string;
+      tierName?: string;
+    } | null = null;
+
+    try {
+      const json = e.dataTransfer.getData('application/json');
+      if (json) {
+        payload = JSON.parse(json);
+      }
+    } catch {
+      // fallback
+    }
+
+    if (!payload || !payload.name) return;
+
+    // Move chip from one tier to another tier
+    if (
+      payload.type === 'roster-chip' &&
+      payload.sourceTierIndex !== undefined &&
+      payload.sourceTierIndex !== targetTierIndex
+    ) {
+      const sourceTierIdx = payload.sourceTierIndex;
+      const memberName = payload.name;
+
+      const updated = tiers.map((t, idx) => {
+        if (idx === sourceTierIdx) {
+          const firstIdx = t.names.indexOf(memberName);
+          if (firstIdx !== -1) {
+            const nextNames = [...t.names];
+            nextNames.splice(firstIdx, 1);
+            return { ...t, names: nextNames };
+          }
+          return t;
+        }
+        if (idx === targetTierIndex) {
+          return { ...t, names: [...t.names, memberName] };
+        }
+        return t;
+      });
+
+      onTiersChange(updated);
+      onRawTextChange(serializeTiersToText(updated));
+    }
   };
 
   // Switch to cards tab: sync rawText -> tiers
@@ -241,18 +320,27 @@ export const RosterInput: React.FC<RosterInputProps> = ({
         </div>
       </div>
 
-      {/* Mode 1: Interactive Tiered Cards View */}
+      {/* Mode 1: Interactive Tiered Cards View - Auto height expansion without internal scrollbars */}
       {activeTab === 'chips' ? (
-        <div className="flex-1 flex flex-col min-h-[220px]">
-          <div className="flex-1 space-y-3.5 overflow-y-auto max-h-[380px] pr-1">
+        <div className="flex-1 flex flex-col">
+          <div className="space-y-3.5">
             {tiers.map((tier, tIdx) => {
               const theme = TIER_COLORS[tIdx % TIER_COLORS.length];
               const isEditing = editingTierId === tier.id;
+              const isDropTarget = activeDropTierIndex === tIdx;
 
               return (
                 <div
                   key={tier.id}
-                  className="rounded-xl border border-slate-200/90 bg-slate-50/50 p-3.5 shadow-2xs transition-all"
+                  data-tier-container
+                  onDragOver={e => handleTierDragOver(e, tIdx)}
+                  onDragLeave={handleTierDragLeave}
+                  onDrop={e => handleDropOnTier(e, tIdx)}
+                  className={`rounded-xl border p-3.5 shadow-2xs transition-all ${
+                    isDropTarget
+                      ? 'border-brand-500 bg-brand-50/70 ring-2 ring-brand-500/30 shadow-sm'
+                      : 'border-slate-200/90 bg-slate-50/50'
+                  }`}
                 >
                   {/* Tier Header with Title & Editable Input */}
                   <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/70 mb-2.5">
@@ -315,7 +403,7 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                     <div className="py-3 text-center border border-dashed border-slate-200 rounded-lg bg-white">
                       <p className="text-xs text-slate-400">No players in this tier yet.</p>
                       <p className="text-[11px] text-slate-400 mt-0.5">
-                        Add players below or paste in 'Text' mode.
+                        Drag players here from other tiers or type below.
                       </p>
                     </div>
                   ) : (
@@ -334,7 +422,7 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                             draggable={!isAssigned}
                             onDragStart={e => {
                               if (!isAssigned) {
-                                handleChipDragStart(e, name);
+                                handleChipDragStart(e, name, tIdx, tier.name);
                               }
                             }}
                             className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all select-none group bg-white border border-slate-200 shadow-xs ${

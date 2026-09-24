@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { TeamResult } from '../../data/types';
 import { Button } from '../ui/Button';
-import { Copy, Check, Share2, Download, RefreshCw } from 'lucide-react';
+import { Copy, Check, Share2, Download, RefreshCw, Trash2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
 export interface DividerActionsProps {
   teams: TeamResult[];
   onRerun: () => void;
+  onClear?: () => void;
   exportElementRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const DividerActions: React.FC<DividerActionsProps> = ({
   teams,
   onRerun,
+  onClear,
   exportElementRef,
 }) => {
   const [copiedText, setCopiedText] = useState(false);
@@ -61,6 +63,10 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
       const dataUrl = await toPng(exportElementRef.current, {
         cacheBust: true,
         backgroundColor: '#f8fafc',
+        style: {
+          padding: '28px',
+          boxSizing: 'border-box',
+        },
       });
       const link = document.createElement('a');
       link.download = `teams-${new Date().toISOString().slice(0, 10)}.png`;
@@ -88,6 +94,19 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
           <RefreshCw className="w-3.5 h-3.5 mr-1" />
           Rerun Shuffle
         </Button>
+        {onClear && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClear}
+            className="text-xs text-slate-500 hover:text-rose-600 hover:border-rose-300"
+            title="Clear all generated teams"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-1" />
+            Clear
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">

@@ -216,6 +216,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
       sourceTeamIndex?: number;
       sourceMemberIndex?: number;
       name: string;
+      tierName?: string;
     } | null = null;
 
     try {
@@ -363,6 +364,15 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
       const reassembledTarget = reassembleWithLocks(targetUnlocked, targetLocks);
       targetTeam.members = reassembledTarget.members;
       targetTeam.lockedIndices = reassembledTarget.lockedIndices;
+
+      if (payload.tierName) {
+        newTeams.forEach(t => {
+          t.memberTiers = {
+            ...(t.memberTiers || {}),
+            [memberName]: payload.tierName!,
+          };
+        });
+      }
     }
 
     onTeamsChange(newTeams);
@@ -372,7 +382,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
     teams.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2';
 
   return (
-    <div ref={containerRef} className="space-y-4">
+    <div ref={containerRef} className="space-y-4 p-3 sm:p-4 rounded-2xl bg-slate-50/50 border border-slate-100/80">
       <div className={`grid ${gridLayoutClass} gap-5`}>
         {teams.map((team, tIdx) => {
           const theme = TEAM_COLOR_THEMES[tIdx % TEAM_COLOR_THEMES.length];

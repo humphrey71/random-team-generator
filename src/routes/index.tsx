@@ -279,6 +279,7 @@ function IndexPage() {
             <DividerActions
               teams={teams}
               onRerun={handleGenerate}
+              onClear={() => setTeams([])}
               exportElementRef={gridExportRef}
             />
 
