@@ -385,7 +385,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
     teams.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2';
 
   return (
-    <div ref={containerRef} className="space-y-4 p-3 sm:p-4 rounded-2xl bg-slate-50/50 border border-slate-100/80">
+    <div ref={containerRef} className="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 box-border">
       <div className={`grid ${gridLayoutClass} gap-5`}>
         {teams.map((team, tIdx) => {
           const theme = TEAM_COLOR_THEMES[tIdx % TEAM_COLOR_THEMES.length];

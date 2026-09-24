@@ -49,16 +49,14 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
   };
 
   const handleDownloadImage = async () => {
-    if (!exportElementRef?.current) return;
+    const node = exportElementRef?.current;
+    if (!node) return;
     try {
       setDownloading(true);
-      const dataUrl = await toPng(exportElementRef.current, {
+      const dataUrl = await toPng(node, {
         cacheBust: true,
+        pixelRatio: 2,
         backgroundColor: '#f8fafc',
-        style: {
-          padding: '28px',
-          boxSizing: 'border-box',
-        },
       });
       const link = document.createElement('a');
       link.download = `teams-${new Date().toISOString().slice(0, 10)}.png`;
