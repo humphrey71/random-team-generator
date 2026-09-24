@@ -241,9 +241,9 @@ function NflPickerPage() {
         <InternalLinkHub />
 
         <SchemaScript
-          appName="Random NFL Team Generator - RollSquad"
+          appName="Random NFL Team Generator - TeamGenerator"
           appDescription="Randomly pick an NFL football team or generate an unbiased fantasy football draft order from all 32 NFL franchises."
-          appUrl="https://rollsquad.com/random-nfl-team-generator"
+          appUrl="https://teamgenerator.org/random-nfl-team-generator"
           faqItems={[
             {
               question: 'How does the random NFL team picker work?',

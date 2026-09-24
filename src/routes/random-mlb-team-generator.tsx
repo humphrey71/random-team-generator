@@ -217,9 +217,9 @@ function MlbPickerPage() {
         <InternalLinkHub />
 
         <SchemaScript
-          appName="Random MLB Team Generator - RollSquad"
+          appName="Random MLB Team Generator - TeamGenerator"
           appDescription="Pick a random Major League Baseball team or generate an unbiased fantasy baseball draft order."
-          appUrl="https://rollsquad.com/random-mlb-team-generator"
+          appUrl="https://teamgenerator.org/random-mlb-team-generator"
           faqItems={[
             {
               question: 'How does the random MLB team generator choose a team?',

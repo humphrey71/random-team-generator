@@ -51,4 +51,36 @@ describe('SSR Prerender capability', () => {
     expect(mlbHtml).toContain('Random MLB Team Generator');
     expect(mlbHtml).toContain('Major League Baseball');
   });
+
+  it('should have optimal title length, meta description, canonical, and social media tags in index.html', async () => {
+    const fs = await import('fs');
+    const indexHtml = fs.readFileSync('index.html', 'utf-8');
+
+    // Title length check (40-60 characters)
+    const titleMatch = indexHtml.match(/<title>(.*?)<\/title>/);
+    expect(titleMatch).toBeTruthy();
+    const title = titleMatch![1];
+    expect(title.length).toBeGreaterThanOrEqual(40);
+    expect(title.length).toBeLessThanOrEqual(60);
+
+    // Meta Description check
+    const descMatch = indexHtml.match(/<meta name="description" content="(.*?)" \/>/);
+    expect(descMatch).toBeTruthy();
+    const desc = descMatch![1];
+    expect(desc.length).toBeGreaterThanOrEqual(100);
+
+    // Canonical URL check
+    expect(indexHtml).toContain('<link rel="canonical" href="https://teamgenerator.org/" />');
+
+    // Social Media Meta Tags Check (Open Graph & Twitter)
+    expect(indexHtml).toContain('<meta property="og:type" content="website" />');
+    expect(indexHtml).toContain('<meta property="og:url" content="https://teamgenerator.org/" />');
+    expect(indexHtml).toContain('<meta property="og:title"');
+    expect(indexHtml).toContain('<meta property="og:description"');
+    expect(indexHtml).toContain('<meta property="og:image"');
+    expect(indexHtml).toContain('<meta name="twitter:card" content="summary_large_image" />');
+    expect(indexHtml).toContain('<meta name="twitter:title"');
+    expect(indexHtml).toContain('<meta name="twitter:description"');
+  });
 });
+

@@ -34,7 +34,7 @@ function PrivacyPolicyPage() {
           <section className="space-y-2">
             <h2 className="text-base font-bold text-slate-900">1. Commitment to Privacy</h2>
             <p>
-              At RollSquad (rollsquad.com), we strongly believe that utility tools should respect user privacy. We do not require registration, accounts, or personal information to use our random team generators or sports team pickers.
+              At TeamGenerator (teamgenerator.org), we strongly believe that utility tools should respect user privacy. We do not require registration, accounts, or personal information to use our random team generators or sports team pickers.
             </p>
           </section>
 

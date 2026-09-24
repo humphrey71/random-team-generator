@@ -35,11 +35,23 @@ async function runPrerender() {
 
       let pageHtml = templateHtml;
 
-      // Replace title
-      pageHtml = pageHtml.replace(
-        /<title>.*?<\/title>/,
-        `<title>${meta.title}</title>\n    <meta name="description" content="${meta.description}" />\n    <link rel="canonical" href="https://rollsquad.com${routePath === '/' ? '' : routePath}" />`
-      );
+      const pageUrl = `https://teamgenerator.org${routePath === '/' ? '' : routePath}`;
+
+      // Replace head tags
+      pageHtml = pageHtml.replace(/<title>.*?<\/title>/, `<title>${meta.title}</title>`);
+      pageHtml = pageHtml.replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${meta.title}" />`);
+      pageHtml = pageHtml.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${meta.description}" />`);
+      pageHtml = pageHtml.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${pageUrl}" />`);
+      
+      // Open Graph
+      pageHtml = pageHtml.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${pageUrl}" />`);
+      pageHtml = pageHtml.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${meta.title}" />`);
+      pageHtml = pageHtml.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${meta.description}" />`);
+
+      // Twitter
+      pageHtml = pageHtml.replace(/<meta name="twitter:url" content=".*?" \/>/, `<meta name="twitter:url" content="${pageUrl}" />`);
+      pageHtml = pageHtml.replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${meta.title}" />`);
+      pageHtml = pageHtml.replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${meta.description}" />`);
 
       // Inject rendered markup into #root
       pageHtml = pageHtml.replace(

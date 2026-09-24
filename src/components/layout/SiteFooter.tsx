@@ -14,7 +14,7 @@ export const SiteFooter: React.FC = () => {
               <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white">
                 <Users className="w-4 h-4" />
               </div>
-              <span className="font-bold text-lg tracking-tight">RollSquad</span>
+              <span className="font-bold text-lg tracking-tight">TeamGenerator<span className="text-brand-400">.org</span></span>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
               The fair, ultra-fast online random team generator and sports team draft simulator. Free, private, and zero installation required.
@@ -108,7 +108,7 @@ export const SiteFooter: React.FC = () => {
 
         {/* Bottom Credits & Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} RollSquad (rollsquad.com). All rights reserved.</p>
+          <p>© {new Date().getFullYear()} TeamGenerator (teamgenerator.org). All rights reserved.</p>
           <p>Designed for fair team splits, fantasy drafts, and casual sports games.</p>
         </div>
       </Container>

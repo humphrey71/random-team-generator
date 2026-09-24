@@ -8,6 +8,7 @@ import { DividerActions } from '../components/divider/DividerActions';
 import { Showcase, ScenarioPreset } from '../components/divider/Showcase';
 import { HowToSection } from '../components/seo/HowToSection';
 import { FaqSection } from '../components/seo/FaqSection';
+import { EditorialContent } from '../components/seo/EditorialContent';
 import { SchemaScript } from '../components/seo/SchemaScript';
 import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { divideTeams, parseNamesInput } from '../lib/team-divider';
@@ -17,6 +18,37 @@ import { Trophy, ShieldCheck, Zap } from 'lucide-react';
 const DEFAULT_SAMPLE_NAMES = [
   'Alex', 'Blake', 'Chris', 'Dana', 'Evan',
   'Frank', 'Grace', 'Henry', 'Ivy', 'Jack'
+];
+
+const HOME_FAQ_ITEMS = [
+  {
+    question: 'How does the random team generator ensure complete fairness?',
+    answer: 'We utilize the unbiased Fisher-Yates (Knuth) shuffling algorithm. Each participant has an equal mathematical likelihood of being assigned to any group, removing human favoritism and selection bias entirely.',
+  },
+  {
+    question: 'What happens if participant numbers do not divide evenly?',
+    answer: 'Our algorithm utilizes balanced round-robin remainder assignment. For instance, dividing 10 individuals into 3 teams produces squads of 4, 3, and 3 members. You will never encounter an uneven split like 4, 4, 2.',
+  },
+  {
+    question: 'Can I balance teams based on player skill levels?',
+    answer: 'Yes! For competitive balance, we recommend dividing players into tiers (e.g., Tier 1 captains, Tier 2 intermediates). Generate one group first, then run the tool for subsequent tiers to distribute top talent evenly across teams.',
+  },
+  {
+    question: 'Is there a limit on how many names I can enter?',
+    answer: 'No practical limit! Our client-side algorithm can easily process rosters ranging from 4 friends up to 1,000+ tournament or conference participants in milliseconds without performance loss.',
+  },
+  {
+    question: 'Can I save or share my team split results?',
+    answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, copy a persistent shareable URL, or export a formatted PNG image card with a single click.',
+  },
+  {
+    question: 'Does this random team generator work offline and on mobile?',
+    answer: 'Absolutely. The web application is 100% responsive for iOS and Android smartphones, and since all calculations execute inside your browser, it continues working even with weak or offline network connections.',
+  },
+  {
+    question: 'Is my roster list stored or sent to an external server?',
+    answer: 'No. All parsing and shuffling algorithms execute 100% locally in your web browser. No names are uploaded or stored on any server, ensuring complete confidentiality.',
+  },
 ];
 
 interface IndexSearchParams {
@@ -143,10 +175,10 @@ function IndexPage() {
           </p>
         </div>
 
-        {/* Core Tool Panel (Above the Fold) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left: Input Box */}
-          <div className="lg:col-span-7 h-full">
+        {/* Core Tool Workspace: Stacked on small screens, Side-by-Side (Left Controls, Right Results) on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column (Desktop 5 cols): Inputs & Controls */}
+          <div className="lg:col-span-5 space-y-6">
             <RosterInput
               value={rawText}
               onChange={setRawText}
@@ -155,10 +187,7 @@ function IndexPage() {
               onClear={handleClear}
               duplicatesCount={duplicatesCount}
             />
-          </div>
 
-          {/* Right: Controls & Generate CTA */}
-          <div className="lg:col-span-5">
             <DividerControls
               mode={mode}
               onModeChange={setMode}
@@ -168,28 +197,28 @@ function IndexPage() {
               maxTeams={Math.max(2, parsedNames.length || 20)}
             />
           </div>
-        </div>
 
-        {/* Result Area */}
-        <div className="space-y-4 pt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-                Generated Teams ({teams.length})
-              </h2>
-              <span className="text-xs text-slate-500">
-                • {teams.reduce((s, t) => s + t.members.length, 0)} total members
-              </span>
+          {/* Right Column (Desktop 7 cols): Live Generated Teams & Export Bar */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+                  Generated Teams ({teams.length})
+                </h2>
+                <span className="text-xs text-slate-500 font-medium">
+                  • {teams.reduce((s, t) => s + t.members.length, 0)} total participants
+                </span>
+              </div>
             </div>
+
+            <DividerActions
+              teams={teams}
+              onRerun={handleGenerate}
+              exportElementRef={gridExportRef}
+            />
+
+            <DividedTeamsGrid teams={teams} containerRef={gridExportRef} />
           </div>
-
-          <DividerActions
-            teams={teams}
-            onRerun={handleGenerate}
-            exportElementRef={gridExportRef}
-          />
-
-          <DividedTeamsGrid teams={teams} containerRef={gridExportRef} />
         </div>
 
         {/* Feature Highlights Pills */}
@@ -291,28 +320,14 @@ function IndexPage() {
           ]}
         />
 
+        {/* 精品页 2.0: 深度指南长文 (800~1200 词，3% 关键词密度) */}
+        <EditorialContent />
+
         {/* 精品页 2.0: PAA FAQ 问答与结构化数据 */}
         <FaqSection
           title="Frequently Asked Questions (FAQ)"
           subtitle="Everything you need to know about our free random team generator tool."
-          items={[
-            {
-              question: 'How does the random team generator ensure complete fairness?',
-              answer: 'We utilize the unbiased Fisher-Yates (Knuth) shuffling algorithm. Each participant has an equal mathematical likelihood of being assigned to any group, removing human favoritism and selection bias entirely.',
-            },
-            {
-              question: 'What happens if participant numbers do not divide evenly?',
-              answer: 'Our algorithm utilizes balanced round-robin remainder assignment. For instance, dividing 10 individuals into 3 teams produces squads of 4, 3, and 3 members. You will never encounter an uneven split like 4, 4, 2.',
-            },
-            {
-              question: 'Can I save or share my team split results?',
-              answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, copy a persistent shareable URL, or export a formatted PNG image card with a single click.',
-            },
-            {
-              question: 'Is my roster list stored or sent to an external server?',
-              answer: 'No. All parsing and shuffling algorithms execute 100% locally in your web browser. No names are uploaded or stored on any server, ensuring complete confidentiality.',
-            },
-          ]}
+          items={HOME_FAQ_ITEMS}
         />
 
         {/* 网状内链模块 */}
@@ -320,28 +335,12 @@ function IndexPage() {
 
         {/* JSON-LD Schema 微数据注入 */}
         <SchemaScript
-          appName="Random Team Generator - RollSquad"
+          appName="Random Team Generator - TeamGenerator"
           appDescription="Free online random team generator and balanced group divider. Split names into groups by team count or group size instantly."
-          appUrl="https://rollsquad.com/"
-          faqItems={[
-            {
-              question: 'How does the random team generator ensure complete fairness?',
-              answer: 'We utilize the unbiased Fisher-Yates (Knuth) shuffling algorithm. Each participant has an equal mathematical likelihood of being assigned to any group, removing human favoritism and selection bias entirely.',
-            },
-            {
-              question: 'What happens if participant numbers do not divide evenly?',
-              answer: 'Our algorithm utilizes balanced round-robin remainder assignment. For instance, dividing 10 individuals into 3 teams produces squads of 4, 3, and 3 members. You will never encounter an uneven split like 4, 4, 2.',
-            },
-            {
-              question: 'Can I save or share my team split results?',
-              answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, copy a persistent shareable URL, or export a formatted PNG image card with a single click.',
-            },
-            {
-              question: 'Is my roster list stored or sent to an external server?',
-              answer: 'No. All parsing and shuffling algorithms execute 100% locally in your web browser. No names are uploaded or stored on any server, ensuring complete confidentiality.',
-            },
-          ]}
+          appUrl="https://teamgenerator.org/"
+          faqItems={HOME_FAQ_ITEMS}
         />
+
       </Container>
     </div>
   );

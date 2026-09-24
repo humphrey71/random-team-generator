@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DOMAIN = 'https://rollsquad.com';
+const DOMAIN = 'https://teamgenerator.org';
 
 const ROUTES = [
   { path: '', priority: '1.0', changefreq: 'daily' },

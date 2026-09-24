@@ -217,9 +217,9 @@ function NbaPickerPage() {
         <InternalLinkHub />
 
         <SchemaScript
-          appName="Random NBA Team Generator - RollSquad"
+          appName="Random NBA Team Generator - TeamGenerator"
           appDescription="Pick a random NBA basketball team or generate an unbiased fantasy basketball draft lottery order."
-          appUrl="https://rollsquad.com/random-nba-team-generator"
+          appUrl="https://teamgenerator.org/random-nba-team-generator"
           faqItems={[
             {
               question: 'How does the random NBA team picker choose a team?',

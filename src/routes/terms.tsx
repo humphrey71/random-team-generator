@@ -34,14 +34,14 @@ function TermsPage() {
           <section className="space-y-2">
             <h2 className="text-base font-bold text-slate-900">1. Acceptance of Terms</h2>
             <p>
-              By accessing and using RollSquad (rollsquad.com), you agree to be bound by these Terms of Service. If you do not agree, please do not use the service.
+              By accessing and using TeamGenerator (teamgenerator.org), you agree to be bound by these Terms of Service. If you do not agree, please do not use the service.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-base font-bold text-slate-900">2. Free Utility Service</h2>
             <p>
-              RollSquad is provided on an "as is" and "as available" basis for personal, educational, recreational, and organizational use. We do not guarantee continuous or uninterrupted operation.
+              TeamGenerator is provided on an "as is" and "as available" basis for personal, educational, recreational, and organizational use. We do not guarantee continuous or uninterrupted operation.
             </p>
           </section>
 

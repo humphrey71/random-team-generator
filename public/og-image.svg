@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <!-- Gradient Background -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="50%" stop-color="#1E1B4B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGrad)" />
+
+  <!-- Background Decorative Shapes -->
+  <circle cx="950" cy="180" r="280" fill="#4F46E5" opacity="0.15" filter="blur(60px)" />
+  <circle cx="200" cy="480" r="220" fill="#38BDF8" opacity="0.1" filter="blur(50px)" />
+
+  <!-- Brand Symbol -->
+  <g transform="translate(100, 100)">
+    <rect width="96" height="96" rx="24" fill="#4F46E5" />
+    <circle cx="48" cy="28" r="10" fill="#FFFFFF" />
+    <circle cx="28" cy="65" r="10" fill="#38BDF8" />
+    <circle cx="68" cy="65" r="10" fill="#FBBF24" />
+    <circle cx="48" cy="48" r="7" fill="#FFFFFF" />
+    <path d="M45 44L52 48L45 52V44Z" fill="#4F46E5" />
+  </g>
+
+  <!-- Title & Subtitle -->
+  <text x="220" y="155" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="900" fill="#FFFFFF">
+    Team<tspan fill="#818CF8">Generator</tspan><tspan fill="#38BDF8">.org</tspan>
+  </text>
+  
+  <text x="100" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="58" font-weight="800" fill="#FFFFFF" letter-spacing="-1">
+    Random Team Generator
+  </text>
+  
+  <text x="100" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400" fill="#94A3B8">
+    Split names into perfectly fair, balanced squads in seconds.
+  </text>
+  <text x="100" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400" fill="#94A3B8">
+    Built for sports leagues, classrooms, fantasy drafts, and game nights.
+  </text>
+
+  <!-- Feature Pills -->
+  <g transform="translate(100, 450)">
+    <rect width="260" height="54" rx="27" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    <text x="130" y="34" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#E2E8F0" text-anchor="middle">
+      ⚡ Instant &amp; 100% Fair
+    </text>
+  </g>
+
+  <g transform="translate(380, 450)">
+    <rect width="290" height="54" rx="27" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    <text x="145" y="34" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#E2E8F0" text-anchor="middle">
+      🏈 NFL / NBA / MLB Support
+    </text>
+  </g>
+
+  <g transform="translate(690, 450)">
+    <rect width="230" height="54" rx="27" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    <text x="115" y="34" font-family="system-ui, sans-serif" font-size="20" font-weight="600" fill="#E2E8F0" text-anchor="middle">
+      🔒 100% Free &amp; Private
+    </text>
+  </g>
+</svg>

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const DOMAIN = 'https://rollsquad.com';
+const DOMAIN = 'https://teamgenerator.org';
 
 const ROUTES = [
   { path: '', priority: '1.0', changefreq: 'daily' },

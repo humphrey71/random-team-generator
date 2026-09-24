@@ -10,28 +10,28 @@ export interface RouteMeta {
 
 export const ROUTE_METAS: Record<string, RouteMeta> = {
   '/': {
-    title: 'Random Team Generator — Split Names into Balanced Teams & Groups',
-    description: 'Free and fast random team generator. Paste your list of names and instantly split them into balanced groups by team count or group size. Perfect for classrooms, sports, and games.',
+    title: 'Random Team Generator - Fair & Fast Group Divider',
+    description: 'Quickly split names into fair, balanced teams with our free random team generator. Perfect for sports, classroom projects, trivia, and corporate icebreakers.',
   },
   '/random-nfl-team-generator': {
-    title: 'Random NFL Team Generator — Pick a Football Team & Draft Order',
-    description: 'Randomly generate an NFL football team from all 32 franchises. Filter by AFC or NFC, shuffle fantasy draft orders, and spin for your next team.',
+    title: 'Random NFL Team Generator - 32 Football Teams Picker',
+    description: 'Pick a random NFL team from all 32 franchises. Generate fair fantasy football draft orders, eliminate picked teams, and filter by conference with ease.',
   },
   '/random-nba-team-generator': {
-    title: 'Random NBA Team Generator — Basketball Team Picker & Draft Shuffle',
-    description: 'Pick a random NBA basketball team from all 30 franchises. Filter by Eastern and Western Conference, generate draft orders, and pick teams instantly.',
+    title: 'Random NBA Team Generator - 30 Basketball Teams Picker',
+    description: 'Randomly select an NBA basketball team from 30 franchises. Perfect for NBA 2K matches, fantasy draft lottery orders, and friendly sports debates.',
   },
   '/random-mlb-team-generator': {
-    title: 'Random MLB Team Generator — Baseball Team Picker & Order Generator',
-    description: 'Generate a random Major League Baseball team from all 30 clubs. Filter by AL or NL, shuffle team lists, and make fair picks.',
+    title: 'Random MLB Team Generator - 30 Baseball Teams Picker',
+    description: 'Draw a random Major League Baseball team from all 30 clubs. Filter by AL or NL, shuffle draft positions, and challenge friends to random match-ups.',
   },
   '/privacy-policy': {
-    title: 'Privacy Policy — RollSquad',
-    description: 'Privacy policy for RollSquad random team generator and sports pickers.',
+    title: 'Privacy Policy - TeamGenerator Free Online Utility',
+    description: 'Read the privacy policy of TeamGenerator.org. We respect user privacy with 100% client-side data execution and zero roster storage.',
   },
   '/terms': {
-    title: 'Terms of Service — RollSquad',
-    description: 'Terms of service for RollSquad random team generator and sports pickers.',
+    title: 'Terms of Service - TeamGenerator Online Group Maker',
+    description: 'Review the terms and conditions for using TeamGenerator.org random team generator tools, sports team pickers, and tournament utilities.',
   },
 };
 

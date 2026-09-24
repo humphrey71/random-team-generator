@@ -19,17 +19,7 @@ export const SiteHeader: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand Name */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-sky-400 flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-bold text-lg text-slate-900 tracking-tight block leading-tight">
-                RollSquad
-              </span>
-              <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-500 block">
-                Random Team Generator
-              </span>
-            </div>
+            <img src="/logo.svg" alt="TeamGenerator.org" className="h-9 w-auto" />
           </Link>
 
           {/* Desktop Navigation Links */}
