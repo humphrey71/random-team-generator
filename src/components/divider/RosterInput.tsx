@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, RotateCcw, Trash2, AlertCircle, GripVertical, X, LayoutGrid, FileText } from 'lucide-react';
+import { Users, RotateCcw, Trash2, AlertCircle, GripVertical, X, LayoutGrid, FileText, Check } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { parseNamesInput } from '../../lib/team-divider';
 import { setCustomDragGhost } from '../../lib/drag-helper';
@@ -163,8 +163,15 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                           : 'Drag and drop this person into any team on the right'
                       }
                     >
-                      {!isAssigned && (
-                        <div className="p-0.5 rounded text-brand-600 bg-brand-50 group-hover:bg-brand-100 transition-colors">
+                      {isAssigned ? (
+                        <div
+                          className="p-0.5 rounded bg-emerald-50 text-emerald-600 shrink-0"
+                          title="Assigned to a team"
+                        >
+                          <Check className="w-3 h-3 stroke-[2.5]" />
+                        </div>
+                      ) : (
+                        <div className="p-0.5 rounded text-brand-600 bg-brand-50 group-hover:bg-brand-100 transition-colors shrink-0">
                           <GripVertical className="w-3 h-3 stroke-[2.5]" />
                         </div>
                       )}
@@ -172,12 +179,6 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                       <span className="font-semibold text-slate-900">
                         {name}
                       </span>
-
-                      {isAssigned && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          ✓ In Team
-                        </span>
-                      )}
 
                       <button
                         type="button"
