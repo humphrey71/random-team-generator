@@ -65,7 +65,12 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
   const handleCopySingleTeam = async (team: TeamResult) => {
     const text =
       `${team.name} (${team.members.length} members):\n` +
-      team.members.map((m, i) => `${i + 1}. ${m}`).join('\n');
+      team.members
+        .map((m, i) => {
+          const tier = team.memberTiers?.[m];
+          return `${i + 1}. ${m}${tier ? ` (${tier})` : ''}`;
+        })
+        .join('\n');
     try {
       await navigator.clipboard.writeText(text);
       setCopiedTeamId(team.id);
@@ -237,6 +242,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
       ...t,
       members: [...t.members],
       lockedIndices: t.lockedIndices ? [...t.lockedIndices] : [],
+      memberTiers: t.memberTiers ? { ...t.memberTiers } : undefined,
     }));
 
     const memberName = payload.name;
@@ -549,6 +555,14 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                               >
                                 {member}
                               </span>
+                              {team.memberTiers?.[member] && (
+                                <span
+                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200/80 shrink-0 ml-1.5"
+                                  title={`Skill Tier: ${team.memberTiers[member]}`}
+                                >
+                                  {team.memberTiers[member]}
+                                </span>
+                              )}
                             </div>
 
                             {/* Member Right Tools: Lock / Pin Button */}

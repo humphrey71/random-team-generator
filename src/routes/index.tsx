@@ -11,8 +11,8 @@ import { FaqSection } from '../components/seo/FaqSection';
 import { EditorialContent } from '../components/seo/EditorialContent';
 import { SchemaScript } from '../components/seo/SchemaScript';
 import { InternalLinkHub } from '../components/seo/InternalLinkHub';
-import { divideTeams, parseNamesInput } from '../lib/team-divider';
-import { DividerMode, TeamResult } from '../data/types';
+import { divideTeams, parseTiersInput } from '../lib/team-divider';
+import { DividerMode, TeamResult, PlayerTier } from '../data/types';
 import { Trophy, ShieldCheck, Zap } from 'lucide-react';
 
 const DEFAULT_SAMPLE_NAMES = [
@@ -80,16 +80,29 @@ function IndexPage() {
   }, [search.names]);
 
   const [rawText, setRawText] = useState(initialRawText);
+  const [tiers, setTiers] = useState<PlayerTier[]>(() => {
+    return parseTiersInput(initialRawText);
+  });
   const [mode, setMode] = useState<DividerMode>(search.mode || 'by-teams');
   const [val, setVal] = useState<number>(search.val || 2);
 
   // Pre-seed initial render with balanced teams
   const [teams, setTeams] = useState<TeamResult[]>(() => {
-    const parsed = parseNamesInput(initialRawText);
-    return divideTeams(parsed, search.mode || 'by-teams', search.val || 2);
+    const initialTiers = parseTiersInput(initialRawText);
+    return divideTeams(initialTiers, search.mode || 'by-teams', search.val || 2);
   });
 
-  const parsedNames = useMemo(() => parseNamesInput(rawText), [rawText]);
+  const parsedNames = useMemo(() => {
+    return tiers.flatMap(t => t.names);
+  }, [tiers]);
+
+  const handleTiersChange = (newTiers: PlayerTier[]) => {
+    setTiers(newTiers);
+  };
+
+  const handleRawTextChange = (text: string) => {
+    setRawText(text);
+  };
 
   // Count duplicate names
   const duplicatesCount = useMemo(() => {
@@ -143,8 +156,8 @@ function IndexPage() {
       setTeams([]);
       return;
     }
-    // Pass current teams to preserve pinned/locked member positions
-    const result = divideTeams(parsedNames, mode, val, teams);
+    // Pass current teams to preserve pinned/locked member positions and tiers
+    const result = divideTeams(tiers, mode, val, teams);
     setTeams(result);
 
     // Update URL Search params for shareability
@@ -159,11 +172,14 @@ function IndexPage() {
   };
 
   const handleApplyScenario = (scenario: ScenarioPreset) => {
-    const newText = scenario.names.join('\n');
-    setRawText(newText);
+    const newTiers: PlayerTier[] = [
+      { id: 'tier-1', name: 'Tier 1', names: scenario.names },
+    ];
+    setTiers(newTiers);
+    setRawText(scenario.names.join('\n'));
     setMode(scenario.mode);
     setVal(scenario.value);
-    const result = divideTeams(scenario.names, scenario.mode, scenario.value);
+    const result = divideTeams(newTiers, scenario.mode, scenario.value);
     setTeams(result);
 
     // Smooth scroll to top
@@ -180,13 +196,19 @@ function IndexPage() {
   };
 
   const handleRestoreSample = () => {
+    const sampleTiers: PlayerTier[] = [
+      { id: 'tier-1', name: 'Tier 1', names: DEFAULT_SAMPLE_NAMES },
+    ];
+    setTiers(sampleTiers);
     setRawText(DEFAULT_SAMPLE_NAMES.join('\n'));
     setMode('by-teams');
     setVal(2);
-    setTeams(divideTeams(DEFAULT_SAMPLE_NAMES, 'by-teams', 2));
+    setTeams(divideTeams(sampleTiers, 'by-teams', 2));
   };
 
   const handleClear = () => {
+    const emptyTiers: PlayerTier[] = [{ id: 'tier-1', name: 'Tier 1', names: [] }];
+    setTiers(emptyTiers);
     setRawText('');
     setTeams([]);
   };
@@ -213,8 +235,10 @@ function IndexPage() {
           {/* Left Column (Desktop 5 cols, XL 4 cols): Inputs & Controls */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-6">
             <RosterInput
-              value={rawText}
-              onChange={setRawText}
+              tiers={tiers}
+              onTiersChange={handleTiersChange}
+              rawText={rawText}
+              onRawTextChange={handleRawTextChange}
               namesCount={parsedNames.length}
               onRestoreSample={handleRestoreSample}
               onClear={handleClear}

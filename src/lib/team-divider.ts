@@ -1,5 +1,5 @@
 import { shuffleArray } from './shuffle';
-import { TeamResult, DividerMode } from '../data/types';
+import { TeamResult, DividerMode, PlayerTier } from '../data/types';
 
 /**
  * Parses raw string input into clean name tokens.
@@ -16,6 +16,77 @@ export function parseNamesInput(raw: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Parses multi-tier formatted text.
+ * Syntax:
+ * # Tier 1 (or === Tier 1 ===)
+ * Name 1
+ * Name 2
+ *
+ * If no tier headers are found, wraps all names in a default single tier.
+ */
+export function parseTiersInput(raw: string): PlayerTier[] {
+  if (!raw || !raw.trim()) {
+    return [{ id: 'tier-1', name: 'Tier 1', names: [] }];
+  }
+
+  const lines = raw.split(/\r?\n/);
+  const tierHeaderRegex = /^(?:#+\s*|={2,}\s*|\[)(.+?)(?:\s*={2,}|\]|:)?$/;
+  const tiers: PlayerTier[] = [];
+
+  let currentTierName: string | null = null;
+  let currentNames: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    const match = trimmed.match(tierHeaderRegex);
+    // If line looks like a tier header (starts with # or === or [)
+    if (match && (trimmed.startsWith('#') || trimmed.startsWith('=') || trimmed.startsWith('['))) {
+      if (currentTierName !== null || currentNames.length > 0) {
+        tiers.push({
+          id: `tier-${tiers.length + 1}-${Date.now()}`,
+          name: currentTierName || `Tier ${tiers.length + 1}`,
+          names: currentNames,
+        });
+        currentNames = [];
+      }
+      currentTierName = match[1].trim() || `Tier ${tiers.length + 1}`;
+    } else {
+      // Ordinary name tokens on this line (supports comma separation on same line)
+      const parsed = parseNamesInput(trimmed);
+      currentNames.push(...parsed);
+    }
+  }
+
+  // Push final tier
+  if (currentTierName !== null || currentNames.length > 0 || tiers.length === 0) {
+    tiers.push({
+      id: `tier-${tiers.length + 1}-${Date.now()}`,
+      name: currentTierName || `Tier ${tiers.length + 1}`,
+      names: currentNames,
+    });
+  }
+
+  return tiers;
+}
+
+/**
+ * Serializes PlayerTier[] back into text.
+ * When there's only 1 tier named "Tier 1", outputs clean newline-separated names.
+ */
+export function serializeTiersToText(tiers: PlayerTier[]): string {
+  if (tiers.length === 0) return '';
+  if (tiers.length === 1 && tiers[0].name.toLowerCase() === 'tier 1') {
+    return tiers[0].names.join('\n');
+  }
+
+  return tiers
+    .map(tier => `# ${tier.name}\n${tier.names.join('\n')}`)
+    .join('\n\n');
+}
+
 interface LockedSlot {
   name: string;
   teamIndex: number;
@@ -23,17 +94,43 @@ interface LockedSlot {
 }
 
 /**
- * Divides names into balanced teams.
+ * Divides names or tiered rosters into balanced teams.
  * Guarantees fair remainder distribution via round-robin assignment.
+ * When multiple tiers are provided, distributes players of each tier evenly across teams.
  * When previousTeams with lockedIndices is provided, locked positions are strictly preserved.
  */
 export function divideTeams(
-  rawNames: string[],
+  rawInput: string[] | PlayerTier[],
   mode: DividerMode,
   value: number,
   previousTeams?: TeamResult[]
 ): TeamResult[] {
-  const cleaned = rawNames.map(n => n.trim()).filter(Boolean);
+  // Normalize input into PlayerTier[]
+  let tiers: PlayerTier[];
+  if (rawInput.length > 0 && typeof rawInput[0] !== 'string') {
+    tiers = rawInput as PlayerTier[];
+  } else {
+    tiers = [
+      {
+        id: 'tier-1',
+        name: 'Tier 1',
+        names: (rawInput as string[]).map(n => n.trim()).filter(Boolean),
+      },
+    ];
+  }
+
+  // Total cleaned names & memberTiers map
+  const memberTiers: Record<string, string> = {};
+  const cleaned: string[] = [];
+
+  for (const tier of tiers) {
+    const validNames = tier.names.map(n => n.trim()).filter(Boolean);
+    for (const name of validNames) {
+      cleaned.push(name);
+      memberTiers[name] = tier.name;
+    }
+  }
+
   if (cleaned.length === 0) return [];
 
   let teamCount: number;
@@ -80,7 +177,6 @@ export function divideTeams(
   // Prepare grid slots for each team
   const teamSlots: (string | null)[][] = targetSizes.map(size => Array(size).fill(null));
   const lockedIndicesPerTeam: number[][] = Array.from({ length: teamCount }, () => []);
-  const lockedNamesSet = new Set<string>();
 
   // Place locked members into designated slots
   for (const lock of lockedSlots) {
@@ -89,52 +185,77 @@ export function divideTeams(
     if (slotIndex < slots.length && slots[slotIndex] === null) {
       slots[slotIndex] = name;
       lockedIndicesPerTeam[teamIndex].push(slotIndex);
-      lockedNamesSet.add(name);
     } else {
-      // If designated index is occupied or out of bounds, find first free slot in this team
       const freeIdx = slots.indexOf(null);
       if (freeIdx !== -1) {
         slots[freeIdx] = name;
         lockedIndicesPerTeam[teamIndex].push(freeIdx);
-        lockedNamesSet.add(name);
       }
     }
   }
 
-  // Collect unlocked members
-  // Account for duplicate names properly
+  // Track remaining lock counts to prevent re-assigning locked people
   const lockedNameToCount = new Map<string, number>();
   for (const lock of lockedSlots) {
     lockedNameToCount.set(lock.name, (lockedNameToCount.get(lock.name) || 0) + 1);
   }
 
-  const unlockedMembers: string[] = [];
-  for (const name of cleaned) {
-    const remainingLockedCount = lockedNameToCount.get(name) || 0;
-    if (remainingLockedCount > 0) {
-      lockedNameToCount.set(name, remainingLockedCount - 1);
-    } else {
-      unlockedMembers.push(name);
-    }
-  }
+  // Track how many members of each tier have been assigned to each team
+  const tierCountsPerTeam: number[][] = Array.from({ length: teamCount }, () =>
+    Array(tiers.length).fill(0)
+  );
 
-  // Shuffle unlocked members
-  const shuffledUnlocked = shuffleArray(unlockedMembers);
-  let unlockedPointer = 0;
-
-  // Fill empty slots across teams
-  for (let t = 0; t < teamCount; t++) {
-    for (let s = 0; s < teamSlots[t].length; s++) {
-      if (teamSlots[t][s] === null && unlockedPointer < shuffledUnlocked.length) {
-        teamSlots[t][s] = shuffledUnlocked[unlockedPointer++];
+  // Distribute tier by tier to guarantee balanced skill distribution across teams
+  tiers.forEach((tier, tierIdx) => {
+    const tierUnlockedMembers: string[] = [];
+    for (const name of tier.names.map(n => n.trim()).filter(Boolean)) {
+      const remainingLocked = lockedNameToCount.get(name) || 0;
+      if (remainingLocked > 0) {
+        lockedNameToCount.set(name, remainingLocked - 1);
+      } else {
+        tierUnlockedMembers.push(name);
       }
     }
-  }
+
+    // Shuffle members within this tier
+    const shuffledTier = shuffleArray(tierUnlockedMembers);
+
+    for (const member of shuffledTier) {
+      // Find candidate teams that have empty slots
+      const availableTeamIndices: number[] = [];
+      for (let t = 0; t < teamCount; t++) {
+        if (teamSlots[t].includes(null)) {
+          availableTeamIndices.push(t);
+        }
+      }
+
+      if (availableTeamIndices.length === 0) break;
+
+      // Pick the team with the fewest members of this tier
+      // Tie breaker: pick team with fewest total filled slots
+      availableTeamIndices.sort((a, b) => {
+        const diffTier = tierCountsPerTeam[a][tierIdx] - tierCountsPerTeam[b][tierIdx];
+        if (diffTier !== 0) return diffTier;
+        const filledA = teamSlots[a].filter(s => s !== null).length;
+        const filledB = teamSlots[b].filter(s => s !== null).length;
+        return filledA - filledB;
+      });
+
+      const bestTeamIdx = availableTeamIndices[0];
+      const emptySlotIdx = teamSlots[bestTeamIdx].indexOf(null);
+      if (emptySlotIdx !== -1) {
+        teamSlots[bestTeamIdx][emptySlotIdx] = member;
+        tierCountsPerTeam[bestTeamIdx][tierIdx]++;
+      }
+    }
+  });
 
   return teamSlots.map((slots, i) => ({
     id: i + 1,
     name: previousTeams && previousTeams[i] ? previousTeams[i].name : `Team ${i + 1}`,
     members: slots.filter((s): s is string => s !== null),
     lockedIndices: lockedIndicesPerTeam[i].sort((a, b) => a - b),
+    memberTiers,
   }));
 }
+

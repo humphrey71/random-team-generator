@@ -1,8 +1,15 @@
+export interface PlayerTier {
+  id: string;
+  name: string;
+  names: string[];
+}
+
 export interface TeamResult {
   id: number;
   name: string;
   members: string[];
   lockedIndices?: number[];
+  memberTiers?: Record<string, string>; // memberName -> tierName
 }
 
 export type DividerMode = 'by-teams' | 'by-size';

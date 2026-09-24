@@ -89,5 +89,28 @@ describe('divideTeams', () => {
       expect(new Set(allMembers)).toEqual(new Set(tenNames));
     }
   });
+
+  it('should balance multi-tier players evenly across teams (e.g., 1 captain per team)', () => {
+    const tieredRoster = [
+      { id: 't1', name: 'Captains', names: ['Captain A', 'Captain B'] },
+      { id: 't2', name: 'Players', names: ['P1', 'P2', 'P3', 'P4'] },
+    ];
+
+    const teams = divideTeams(tieredRoster, 'by-teams', 2);
+    expect(teams).toHaveLength(2);
+    expect(teams[0].members).toHaveLength(3);
+    expect(teams[1].members).toHaveLength(3);
+
+    // Each team must have exactly 1 captain
+    const captainsInTeam0 = teams[0].members.filter(m => m.startsWith('Captain'));
+    const captainsInTeam1 = teams[1].members.filter(m => m.startsWith('Captain'));
+    expect(captainsInTeam0).toHaveLength(1);
+    expect(captainsInTeam1).toHaveLength(1);
+
+    // memberTiers dictionary should map each person to their tier name
+    expect(teams[0].memberTiers?.['Captain A']).toBe('Captains');
+    expect(teams[0].memberTiers?.['P1']).toBe('Players');
+  });
 });
+
 

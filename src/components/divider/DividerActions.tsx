@@ -22,7 +22,12 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
   const formatTeamsText = (): string => {
     return teams
       .map(team => {
-        const memberList = team.members.map((m, i) => `  ${i + 1}. ${m}`).join('\n');
+        const memberList = team.members
+          .map((m, i) => {
+            const tier = team.memberTiers?.[m];
+            return `  ${i + 1}. ${m}${tier ? ` (${tier})` : ''}`;
+          })
+          .join('\n');
         return `### ${team.name} (${team.members.length} members)\n${memberList}`;
       })
       .join('\n\n');
