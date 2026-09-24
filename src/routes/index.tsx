@@ -6,6 +6,10 @@ import { DividerControls } from '../components/divider/DividerControls';
 import { DividedTeamsGrid } from '../components/divider/DividedTeamsGrid';
 import { DividerActions } from '../components/divider/DividerActions';
 import { CaseShowcase, ScenarioPreset } from '../components/divider/CaseShowcase';
+import { HowToSection } from '../components/seo/HowToSection';
+import { FaqSection } from '../components/seo/FaqSection';
+import { SchemaScript } from '../components/seo/SchemaScript';
+import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { divideTeams, parseNamesInput } from '../lib/team-divider';
 import { DividerMode, TeamResult } from '../data/types';
 import { Sparkles, Trophy, ShieldCheck, Zap } from 'lucide-react';
@@ -263,6 +267,81 @@ function IndexPage() {
 
         {/* 精品页 2.0: CaseShowcase 场景案例库 */}
         <CaseShowcase onApplyScenario={handleApplyScenario} />
+
+        {/* 精品页 2.0: How-To 图文指南 */}
+        <HowToSection
+          title="How to Split Names into Random Teams"
+          subtitle="Three simple steps to generate fair, balanced teams for classrooms, sports, or games."
+          steps={[
+            {
+              number: '1',
+              title: 'Paste or Enter Names',
+              description: 'Type or paste your participant list into the text box. The tool automatically detects newlines, commas, and tabs, while filtering out empty lines.',
+            },
+            {
+              number: '2',
+              title: 'Select Grouping Method',
+              description: 'Choose whether you want a specific number of teams (e.g. 3 teams) or a maximum number of members per team (e.g. 4 players per squad).',
+            },
+            {
+              number: '3',
+              title: 'Generate & Export',
+              description: 'Click "Generate Random Teams" for an instant split. Rerun the shuffle, copy clean markdown tables, or download high-resolution PNG image cards.',
+            },
+          ]}
+        />
+
+        {/* 精品页 2.0: PAA FAQ 问答与结构化数据 */}
+        <FaqSection
+          title="Frequently Asked Questions (FAQ)"
+          subtitle="Everything you need to know about our free random team generator tool."
+          items={[
+            {
+              question: 'How does the random team generator ensure complete fairness?',
+              answer: 'We utilize the unbiased Fisher-Yates (Knuth) shuffling algorithm. Each participant has an equal mathematical likelihood of being assigned to any group, removing human favoritism and selection bias entirely.',
+            },
+            {
+              question: 'What happens if participant numbers do not divide evenly?',
+              answer: 'Our algorithm utilizes balanced round-robin remainder assignment. For instance, dividing 10 individuals into 3 teams produces squads of 4, 3, and 3 members. You will never encounter an uneven split like 4, 4, 2.',
+            },
+            {
+              question: 'Can I save or share my team split results?',
+              answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, copy a persistent shareable URL, or export a formatted PNG image card with a single click.',
+            },
+            {
+              question: 'Is my roster list stored or sent to an external server?',
+              answer: 'No. All parsing and shuffling algorithms execute 100% locally in your web browser. No names are uploaded or stored on any server, ensuring complete confidentiality.',
+            },
+          ]}
+        />
+
+        {/* 网状内链模块 */}
+        <InternalLinkHub />
+
+        {/* JSON-LD Schema 微数据注入 */}
+        <SchemaScript
+          appName="Random Team Generator - RollSquad"
+          appDescription="Free online random team generator and balanced group divider. Split names into groups by team count or group size instantly."
+          appUrl="https://rollsquad.com/"
+          faqItems={[
+            {
+              question: 'How does the random team generator ensure complete fairness?',
+              answer: 'We utilize the unbiased Fisher-Yates (Knuth) shuffling algorithm. Each participant has an equal mathematical likelihood of being assigned to any group, removing human favoritism and selection bias entirely.',
+            },
+            {
+              question: 'What happens if participant numbers do not divide evenly?',
+              answer: 'Our algorithm utilizes balanced round-robin remainder assignment. For instance, dividing 10 individuals into 3 teams produces squads of 4, 3, and 3 members. You will never encounter an uneven split like 4, 4, 2.',
+            },
+            {
+              question: 'Can I save or share my team split results?',
+              answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, copy a persistent shareable URL, or export a formatted PNG image card with a single click.',
+            },
+            {
+              question: 'Is my roster list stored or sent to an external server?',
+              answer: 'No. All parsing and shuffling algorithms execute 100% locally in your web browser. No names are uploaded or stored on any server, ensuring complete confidentiality.',
+            },
+          ]}
+        />
       </Container>
     </div>
   );

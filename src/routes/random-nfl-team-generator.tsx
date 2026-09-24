@@ -6,6 +6,10 @@ import { PickerModeSwitch } from '../components/picker/PickerModeSwitch';
 import { TeamCardDraw } from '../components/picker/TeamCardDraw';
 import { DraftOrderTable } from '../components/picker/DraftOrderTable';
 import { SportsCaseShowcase } from '../components/picker/SportsCaseShowcase';
+import { HowToSection } from '../components/seo/HowToSection';
+import { FaqSection } from '../components/seo/FaqSection';
+import { SchemaScript } from '../components/seo/SchemaScript';
+import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { NFL_TEAMS } from '../data/nfl-teams';
 import { shuffleArray } from '../lib/shuffle';
 import { PickerMode, SportsTeam } from '../data/types';
@@ -185,6 +189,80 @@ function NflPickerPage() {
 
         {/* 精品页 2.0: SportsCaseShowcase */}
         <SportsCaseShowcase leagueName="NFL" sampleTeams={NFL_TEAMS} />
+
+        {/* 精品页 2.0: How-to */}
+        <HowToSection
+          title="How to Use the Random NFL Team Generator"
+          subtitle="Generate fair NFL picks for fantasy leagues, video game matchups, or casual fandom."
+          steps={[
+            {
+              number: '1',
+              title: 'Choose Conference Filter',
+              description: 'Select "All" to draw from all 32 NFL clubs, or filter exclusively by AFC or NFC to target your favorite conference.',
+            },
+            {
+              number: '2',
+              title: 'Select Pick or Draft Board',
+              description: 'Use "Pick Single Team" for a spin animation, or switch to "Draft Order Board" to randomize full fantasy draft positions from 1 to 32.',
+            },
+            {
+              number: '3',
+              title: 'Copy or Share Results',
+              description: 'Use the elimination toggle to prevent duplicate team picks, or export your draft order as a clean image for your league chat.',
+            },
+          ]}
+        />
+
+        {/* 精品页 2.0: FAQ */}
+        <FaqSection
+          title="NFL Team Picker FAQ"
+          subtitle="Common questions about picking NFL teams and fantasy draft randomization."
+          items={[
+            {
+              question: 'How does the random NFL team picker work?',
+              answer: 'It selects an NFL franchise from all 32 active franchises using unbiased pseudo-random number generation. You can filter by AFC or NFC or use elimination mode to draw unique teams.',
+            },
+            {
+              question: 'Can I use this for our fantasy football draft lottery?',
+              answer: 'Yes! Simply switch to the "Draft Order Board" mode and hit "Shuffle Order" to generate an unbiased 1st through 32nd draft order. You can copy the text or download the PNG board.',
+            },
+            {
+              question: 'Are all 32 current NFL franchises included?',
+              answer: 'Yes, all 32 active NFL teams are included with their official primary colors, cities, and conference/division designations.',
+            },
+            {
+              question: 'Can I prevent teams from repeating?',
+              answer: 'Yes, toggle "Elimination Mode" on. When enabled, any team drawn is removed from the available pool until you reset.',
+            },
+          ]}
+        />
+
+        {/* 内部推荐聚合 */}
+        <InternalLinkHub />
+
+        <SchemaScript
+          appName="Random NFL Team Generator - RollSquad"
+          appDescription="Randomly pick an NFL football team or generate an unbiased fantasy football draft order from all 32 NFL franchises."
+          appUrl="https://rollsquad.com/random-nfl-team-generator"
+          faqItems={[
+            {
+              question: 'How does the random NFL team picker work?',
+              answer: 'It selects an NFL franchise from all 32 active franchises using unbiased pseudo-random number generation. You can filter by AFC or NFC or use elimination mode to draw unique teams.',
+            },
+            {
+              question: 'Can I use this for our fantasy football draft lottery?',
+              answer: 'Yes! Simply switch to the "Draft Order Board" mode and hit "Shuffle Order" to generate an unbiased 1st through 32nd draft order. You can copy the text or download the PNG board.',
+            },
+            {
+              question: 'Are all 32 current NFL franchises included?',
+              answer: 'Yes, all 32 active NFL teams are included with their official primary colors, cities, and conference/division designations.',
+            },
+            {
+              question: 'Can I prevent teams from repeating?',
+              answer: 'Yes, toggle "Elimination Mode" on. When enabled, any team drawn is removed from the available pool until you reset.',
+            },
+          ]}
+        />
       </Container>
     </div>
   );

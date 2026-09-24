@@ -6,6 +6,10 @@ import { PickerModeSwitch } from '../components/picker/PickerModeSwitch';
 import { TeamCardDraw } from '../components/picker/TeamCardDraw';
 import { DraftOrderTable } from '../components/picker/DraftOrderTable';
 import { SportsCaseShowcase } from '../components/picker/SportsCaseShowcase';
+import { HowToSection } from '../components/seo/HowToSection';
+import { FaqSection } from '../components/seo/FaqSection';
+import { SchemaScript } from '../components/seo/SchemaScript';
+import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { MLB_TEAMS } from '../data/mlb-teams';
 import { shuffleArray } from '../lib/shuffle';
 import { PickerMode, SportsTeam } from '../data/types';
@@ -160,24 +164,81 @@ function MlbPickerPage() {
           </Link>
         </div>
 
-        {/* Other Leagues Switcher */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs">
-          <span className="text-slate-400 font-semibold">Other Leagues:</span>
-          <Link
-            to="/random-nfl-team-generator"
-            className="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brand-500 hover:text-brand-600 bg-white font-medium"
-          >
-            Random NFL Team Generator
-          </Link>
-          <Link
-            to="/random-nba-team-generator"
-            className="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brand-500 hover:text-brand-600 bg-white font-medium"
-          >
-            Random NBA Team Generator
-          </Link>
-        </div>
-
+        {/* 精品页 2.0: SportsCaseShowcase */}
         <SportsCaseShowcase leagueName="MLB" sampleTeams={MLB_TEAMS} />
+
+        {/* 精品页 2.0: How-to */}
+        <HowToSection
+          title="How to Use the Random MLB Team Generator"
+          subtitle="Generate random baseball teams for MLB The Show matchups, fantasy drafts, and pennant races."
+          steps={[
+            {
+              number: '1',
+              title: 'Select League Filter',
+              description: 'Filter by American League (AL) or National League (NL), or draw from the entire 30-club Major League Baseball pool.',
+            },
+            {
+              number: '2',
+              title: 'Draw Single Club or Full Board',
+              description: 'Click to spin for a single team with official colors, or switch to the draft board to randomize 1 to 30 draft positions.',
+            },
+            {
+              number: '3',
+              title: 'Save and Export',
+              description: 'Use the elimination toggle to prevent duplicate baseball team draws, or download your results as a clean image.',
+            },
+          ]}
+        />
+
+        {/* 精品页 2.0: FAQ */}
+        <FaqSection
+          title="MLB Team Picker FAQ"
+          subtitle="Common questions about picking Major League Baseball teams and fantasy draft lottery setups."
+          items={[
+            {
+              question: 'How does the random MLB team generator choose a team?',
+              answer: 'It uses a cryptographically sound pseudo-random algorithm to pick one of the 30 active Major League Baseball franchises with equal mathematical probability.',
+            },
+            {
+              question: 'Can I filter by American League or National League?',
+              answer: 'Yes! Simply click the "AL" or "NL" tab above the card to restrict your candidate pool to the 15 clubs in that specific league.',
+            },
+            {
+              question: 'How do I randomize fantasy baseball draft picks?',
+              answer: 'Switch to the "Draft Order Board" view and click "Shuffle Order". You will immediately generate a clean 1st to 30th lottery sequence.',
+            },
+            {
+              question: 'Are all 30 current MLB teams included?',
+              answer: 'Yes, all 30 clubs across the AL East, AL Central, AL West, NL East, NL Central, and NL West are included with their official primary colors.',
+            },
+          ]}
+        />
+
+        <InternalLinkHub />
+
+        <SchemaScript
+          appName="Random MLB Team Generator - RollSquad"
+          appDescription="Pick a random Major League Baseball team or generate an unbiased fantasy baseball draft order."
+          appUrl="https://rollsquad.com/random-mlb-team-generator"
+          faqItems={[
+            {
+              question: 'How does the random MLB team generator choose a team?',
+              answer: 'It uses a cryptographically sound pseudo-random algorithm to pick one of the 30 active Major League Baseball franchises with equal mathematical probability.',
+            },
+            {
+              question: 'Can I filter by American League or National League?',
+              answer: 'Yes! Simply click the "AL" or "NL" tab above the card to restrict your candidate pool to the 15 clubs in that specific league.',
+            },
+            {
+              question: 'How do I randomize fantasy baseball draft picks?',
+              answer: 'Switch to the "Draft Order Board" view and click "Shuffle Order". You will immediately generate a clean 1st to 30th lottery sequence.',
+            },
+            {
+              question: 'Are all 30 current MLB teams included?',
+              answer: 'Yes, all 30 clubs across the AL East, AL Central, AL West, NL East, NL Central, and NL West are included with their official primary colors.',
+            },
+          ]}
+        />
       </Container>
     </div>
   );

@@ -6,6 +6,10 @@ import { PickerModeSwitch } from '../components/picker/PickerModeSwitch';
 import { TeamCardDraw } from '../components/picker/TeamCardDraw';
 import { DraftOrderTable } from '../components/picker/DraftOrderTable';
 import { SportsCaseShowcase } from '../components/picker/SportsCaseShowcase';
+import { HowToSection } from '../components/seo/HowToSection';
+import { FaqSection } from '../components/seo/FaqSection';
+import { SchemaScript } from '../components/seo/SchemaScript';
+import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { NBA_TEAMS } from '../data/nba-teams';
 import { shuffleArray } from '../lib/shuffle';
 import { PickerMode, SportsTeam } from '../data/types';
@@ -160,24 +164,81 @@ function NbaPickerPage() {
           </Link>
         </div>
 
-        {/* Other Leagues Switcher */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs">
-          <span className="text-slate-400 font-semibold">Other Leagues:</span>
-          <Link
-            to="/random-nfl-team-generator"
-            className="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brand-500 hover:text-brand-600 bg-white font-medium"
-          >
-            Random NFL Team Generator
-          </Link>
-          <Link
-            to="/random-mlb-team-generator"
-            className="px-3 py-1.5 rounded-lg border border-slate-200 hover:border-brand-500 hover:text-brand-600 bg-white font-medium"
-          >
-            Random MLB Team Generator
-          </Link>
-        </div>
-
+        {/* 精品页 2.0: SportsCaseShowcase */}
         <SportsCaseShowcase leagueName="NBA" sampleTeams={NBA_TEAMS} />
+
+        {/* 精品页 2.0: How-to */}
+        <HowToSection
+          title="How to Use the Random NBA Team Picker"
+          subtitle="Generate random NBA basketball teams for NBA 2K matches, fantasy leagues, and casual fandom."
+          steps={[
+            {
+              number: '1',
+              title: 'Select Conference Filter',
+              description: 'Choose "All" to draw from all 30 NBA clubs, or filter by Eastern or Western Conference.',
+            },
+            {
+              number: '2',
+              title: 'Pick Team or View Draft Table',
+              description: 'Spin for an individual basketball team card, or switch to the draft table to generate 1 to 30 randomized draft positions.',
+            },
+            {
+              number: '3',
+              title: 'Copy, Share or Download',
+              description: 'Enable elimination mode for multi-player selections, or download your draft board as an image card.',
+            },
+          ]}
+        />
+
+        {/* 精品页 2.0: FAQ */}
+        <FaqSection
+          title="NBA Team Picker FAQ"
+          subtitle="Frequently asked questions about NBA team selection and fantasy basketball drafts."
+          items={[
+            {
+              question: 'How does the random NBA team picker choose a team?',
+              answer: 'It uses a uniform pseudo-random number generator to select a team from the 30 active NBA franchises with equal statistical probability.',
+            },
+            {
+              question: 'Can I use this for NBA 2K video game play with friends?',
+              answer: 'Yes! It is popular for NBA 2K random team challenges. Each player spins once, and you must play with whatever team fate decides.',
+            },
+            {
+              question: 'How do I randomize an NBA fantasy draft order?',
+              answer: 'Switch to the "Draft Order Board" view and click "Shuffle Order". You will immediately get a randomized 1st to 30th lottery sequence.',
+            },
+            {
+              question: 'Are all 30 current NBA teams supported?',
+              answer: 'Yes, all 30 NBA teams across the Atlantic, Central, Southeast, Northwest, Pacific, and Southwest divisions are included.',
+            },
+          ]}
+        />
+
+        <InternalLinkHub />
+
+        <SchemaScript
+          appName="Random NBA Team Generator - RollSquad"
+          appDescription="Pick a random NBA basketball team or generate an unbiased fantasy basketball draft lottery order."
+          appUrl="https://rollsquad.com/random-nba-team-generator"
+          faqItems={[
+            {
+              question: 'How does the random NBA team picker choose a team?',
+              answer: 'It uses a uniform pseudo-random number generator to select a team from the 30 active NBA franchises with equal statistical probability.',
+            },
+            {
+              question: 'Can I use this for NBA 2K video game play with friends?',
+              answer: 'Yes! It is popular for NBA 2K random team challenges. Each player spins once, and you must play with whatever team fate decides.',
+            },
+            {
+              question: 'How do I randomize an NBA fantasy draft order?',
+              answer: 'Switch to the "Draft Order Board" view and click "Shuffle Order". You will immediately get a randomized 1st to 30th lottery sequence.',
+            },
+            {
+              question: 'Are all 30 current NBA teams supported?',
+              answer: 'Yes, all 30 NBA teams across the Atlantic, Central, Southeast, Northwest, Pacific, and Southwest divisions are included.',
+            },
+          ]}
+        />
       </Container>
     </div>
   );
