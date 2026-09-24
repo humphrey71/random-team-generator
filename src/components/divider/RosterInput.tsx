@@ -396,7 +396,7 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                           handleQuickAddPlayer(tIdx);
                         }
                       }}
-                      placeholder={`+ Add player to ${tier.name} (press Enter)...`}
+                      placeholder={`Add player to ${tier.name} (press Enter)...`}
                       className="flex-1 px-2.5 py-1 text-xs bg-white border border-slate-200 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all"
                     />
                     <button
@@ -411,7 +411,7 @@ export const RosterInput: React.FC<RosterInputProps> = ({
               );
             })}
 
-            {/* Prominent "+ Add Tier" Button exactly as requested */}
+            {/* Prominent "Add Tier" Button */}
             <button
               type="button"
               onClick={handleAddTier}
@@ -419,7 +419,7 @@ export const RosterInput: React.FC<RosterInputProps> = ({
               title="Add another skill tier (e.g. Captains, Intermediates, Novices)"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
-              + Add Tier
+              Add Tier
             </button>
           </div>
 
