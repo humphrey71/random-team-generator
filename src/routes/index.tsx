@@ -1,0 +1,269 @@
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { Container } from '../components/layout/Container';
+import { RosterInput } from '../components/divider/RosterInput';
+import { DividerControls } from '../components/divider/DividerControls';
+import { DividedTeamsGrid } from '../components/divider/DividedTeamsGrid';
+import { DividerActions } from '../components/divider/DividerActions';
+import { CaseShowcase, ScenarioPreset } from '../components/divider/CaseShowcase';
+import { divideTeams, parseNamesInput } from '../lib/team-divider';
+import { DividerMode, TeamResult } from '../data/types';
+import { Sparkles, Trophy, ShieldCheck, Zap } from 'lucide-react';
+
+const DEFAULT_SAMPLE_NAMES = [
+  'Alex', 'Blake', 'Chris', 'Dana', 'Evan',
+  'Frank', 'Grace', 'Henry', 'Ivy', 'Jack'
+];
+
+interface IndexSearchParams {
+  names?: string;
+  mode?: DividerMode;
+  val?: number;
+}
+
+export const Route = createFileRoute('/')({
+  validateSearch: (search: Record<string, unknown>): IndexSearchParams => {
+    return {
+      names: typeof search.names === 'string' ? search.names : undefined,
+      mode: search.mode === 'by-size' ? 'by-size' : 'by-teams',
+      val: Number(search.val) > 0 ? Number(search.val) : 2,
+    };
+  },
+  component: IndexPage,
+});
+
+function IndexPage() {
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const initialRawText = useMemo(() => {
+    if (search.names) {
+      return search.names.replace(/,/g, '\n');
+    }
+    return DEFAULT_SAMPLE_NAMES.join('\n');
+  }, [search.names]);
+
+  const [rawText, setRawText] = useState(initialRawText);
+  const [mode, setMode] = useState<DividerMode>(search.mode || 'by-teams');
+  const [val, setVal] = useState<number>(search.val || 2);
+
+  // Pre-seed initial render with balanced teams
+  const [teams, setTeams] = useState<TeamResult[]>(() => {
+    const parsed = parseNamesInput(initialRawText);
+    return divideTeams(parsed, search.mode || 'by-teams', search.val || 2);
+  });
+
+  const parsedNames = useMemo(() => parseNamesInput(rawText), [rawText]);
+
+  // Count duplicate names
+  const duplicatesCount = useMemo(() => {
+    const seen = new Set<string>();
+    let dupes = 0;
+    for (const name of parsedNames) {
+      const lower = name.toLowerCase();
+      if (seen.has(lower)) dupes++;
+      else seen.add(lower);
+    }
+    return dupes;
+  }, [parsedNames]);
+
+  const generatorTopRef = useRef<HTMLDivElement>(null);
+  const gridExportRef = useRef<HTMLDivElement>(null);
+
+  const handleGenerate = () => {
+    if (parsedNames.length === 0) {
+      setTeams([]);
+      return;
+    }
+    const result = divideTeams(parsedNames, mode, val);
+    setTeams(result);
+
+    // Update URL Search params for shareability
+    navigate({
+      search: {
+        names: parsedNames.slice(0, 30).join(','),
+        mode,
+        val,
+      },
+      replace: true,
+    });
+  };
+
+  const handleApplyScenario = (scenario: ScenarioPreset) => {
+    const newText = scenario.names.join('\n');
+    setRawText(newText);
+    setMode(scenario.mode);
+    setVal(scenario.value);
+    const result = divideTeams(scenario.names, scenario.mode, scenario.value);
+    setTeams(result);
+
+    // Smooth scroll to top
+    generatorTopRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    navigate({
+      search: {
+        names: scenario.names.slice(0, 30).join(','),
+        mode: scenario.mode,
+        val: scenario.value,
+      },
+      replace: true,
+    });
+  };
+
+  const handleRestoreSample = () => {
+    setRawText(DEFAULT_SAMPLE_NAMES.join('\n'));
+    setMode('by-teams');
+    setVal(2);
+    setTeams(divideTeams(DEFAULT_SAMPLE_NAMES, 'by-teams', 2));
+  };
+
+  const handleClear = () => {
+    setRawText('');
+    setTeams([]);
+  };
+
+  return (
+    <div className="py-8 sm:py-12" ref={generatorTopRef}>
+      <Container size="lg" className="space-y-10">
+        {/* Hero Section */}
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold">
+            <Zap className="w-3.5 h-3.5" />
+            <span>Fair, Instant & 100% Free</span>
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Random Team Generator
+          </h1>
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
+            Split any list of names into completely balanced, randomized teams in milliseconds. Designed for classrooms, sports leagues, board games, and group projects.
+          </p>
+        </div>
+
+        {/* Core Tool Panel (Above the Fold) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left: Input Box */}
+          <div className="lg:col-span-7 h-full">
+            <RosterInput
+              value={rawText}
+              onChange={setRawText}
+              namesCount={parsedNames.length}
+              onRestoreSample={handleRestoreSample}
+              onClear={handleClear}
+              duplicatesCount={duplicatesCount}
+            />
+          </div>
+
+          {/* Right: Controls & Generate CTA */}
+          <div className="lg:col-span-5">
+            <DividerControls
+              mode={mode}
+              onModeChange={setMode}
+              value={val}
+              onValueChange={setVal}
+              onGenerate={handleGenerate}
+              maxTeams={Math.max(2, parsedNames.length || 20)}
+            />
+          </div>
+        </div>
+
+        {/* Result Area */}
+        <div className="space-y-4 pt-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+                Generated Teams ({teams.length})
+              </h2>
+              <span className="text-xs text-slate-500">
+                • {teams.reduce((s, t) => s + t.members.length, 0)} total members
+              </span>
+            </div>
+          </div>
+
+          <DividerActions
+            teams={teams}
+            onRerun={handleGenerate}
+            exportElementRef={gridExportRef}
+          />
+
+          <DividedTeamsGrid teams={teams} containerRef={gridExportRef} />
+        </div>
+
+        {/* Feature Highlights Pills */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+          <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Cryptographically Fair</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Every member has equal probability of placement using Fisher-Yates shuffle.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+              <Zap className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Remainder Balanced</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Odd participant numbers are distributed with maximum 1-member variance across teams.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+              <Trophy className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Instant Export</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Copy markdown tables or download high-res PNG cards for chat and Discord.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Sports Pickers Network Links Banner */}
+        <div className="p-6 bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+          <div className="space-y-1 text-center md:text-left">
+            <div className="inline-flex items-center gap-1.5 text-xs text-brand-400 font-semibold uppercase tracking-wider">
+              <Trophy className="w-3.5 h-3.5" />
+              <span>Sports Randomizer Hub</span>
+            </div>
+            <h3 className="text-xl font-bold tracking-tight">
+              Looking to pick a random sports franchise?
+            </h3>
+            <p className="text-sm text-slate-300">
+              Spin for an NFL, NBA, or MLB team or randomize your fantasy draft order in seconds.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              to="/random-nfl-team-generator"
+              className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
+            >
+              NFL Picker (32)
+            </Link>
+            <Link
+              to="/random-nba-team-generator"
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-colors"
+            >
+              NBA Picker (30)
+            </Link>
+            <Link
+              to="/random-mlb-team-generator"
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition-colors"
+            >
+              MLB Picker (30)
+            </Link>
+          </div>
+        </div>
+
+        {/* 精品页 2.0: CaseShowcase 场景案例库 */}
+        <CaseShowcase onApplyScenario={handleApplyScenario} />
+      </Container>
+    </div>
+  );
+}
