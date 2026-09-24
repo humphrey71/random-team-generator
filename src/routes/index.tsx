@@ -177,8 +177,8 @@ function IndexPage() {
 
         {/* Core Tool Workspace: Stacked on small screens, Side-by-Side (Left Controls, Right Results) on large screens */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column (Desktop 5 cols): Inputs & Controls */}
-          <div className="lg:col-span-5 space-y-6">
+          {/* Left Column (Desktop 5 cols, XL 4 cols): Inputs & Controls */}
+          <div className="lg:col-span-5 xl:col-span-4 space-y-6">
             <RosterInput
               value={rawText}
               onChange={setRawText}
@@ -198,8 +198,8 @@ function IndexPage() {
             />
           </div>
 
-          {/* Right Column (Desktop 7 cols): Live Generated Teams & Export Bar */}
-          <div className="lg:col-span-7 space-y-4">
+          {/* Right Column (Desktop 7 cols, XL 8 cols): Live Generated Teams & Export Bar */}
+          <div className="lg:col-span-7 xl:col-span-8 space-y-4">
             <div className="flex items-center justify-between pb-1 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-slate-900 tracking-tight">
