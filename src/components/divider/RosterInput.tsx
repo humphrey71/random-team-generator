@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Users, RotateCcw, Trash2, AlertCircle, GripVertical, X, LayoutGrid, FileText } from 'lucide-react';
+import { Users, RotateCcw, Trash2, AlertCircle, GripVertical, X, LayoutGrid, FileText, Check } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { parseNamesInput } from '../../lib/team-divider';
+import { setCustomDragGhost } from '../../lib/drag-helper';
 
 export interface RosterInputProps {
   value: string;
@@ -10,6 +11,7 @@ export interface RosterInputProps {
   onRestoreSample: () => void;
   onClear: () => void;
   duplicatesCount?: number;
+  assignedCounts?: Map<string, number>;
 }
 
 export const RosterInput: React.FC<RosterInputProps> = ({
@@ -19,6 +21,7 @@ export const RosterInput: React.FC<RosterInputProps> = ({
   onRestoreSample,
   onClear,
   duplicatesCount = 0,
+  assignedCounts,
 }) => {
   const [activeTab, setActiveTab] = useState<'text' | 'chips'>('chips');
   const parsedNames = parseNamesInput(value);
@@ -35,7 +38,13 @@ export const RosterInput: React.FC<RosterInputProps> = ({
       JSON.stringify({ type: 'roster-chip', name })
     );
     e.dataTransfer.effectAllowed = 'copyMove';
+
+    // Set high-visibility custom drag ghost image
+    setCustomDragGhost(e, name, 'Assigning');
   };
+
+  // Track assigned count usage for chips
+  const consumedCounts = new Map<string, number>();
 
   return (
     <div className="flex flex-col h-full bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
@@ -126,33 +135,70 @@ export const RosterInput: React.FC<RosterInputProps> = ({
               </div>
             ) : (
               <div className="flex flex-wrap gap-2">
-                {parsedNames.map((name, idx) => (
-                  <div
-                    key={`${name}-${idx}`}
-                    draggable
-                    onDragStart={e => handleChipDragStart(e, name)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 shadow-xs hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20 hover:bg-brand-50/40 cursor-grab active:cursor-grabbing transition-all select-none group"
-                    title="Drag and drop this person into any team on the right"
-                  >
-                    <div className="p-0.5 rounded text-brand-600 bg-brand-50 group-hover:bg-brand-100 transition-colors">
-                      <GripVertical className="w-3 h-3 stroke-[2.5]" />
-                    </div>
-                    <span className="font-semibold text-slate-900">{name}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveChip(idx)}
-                      className="ml-0.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-full p-0.5 transition-colors"
-                      title="Remove name"
+                {parsedNames.map((name, idx) => {
+                  const totalAssigned = assignedCounts?.get(name) || 0;
+                  const alreadyConsumed = consumedCounts.get(name) || 0;
+                  const isAssigned = alreadyConsumed < totalAssigned;
+                  if (isAssigned) {
+                    consumedCounts.set(name, alreadyConsumed + 1);
+                  }
+
+                  return (
+                    <div
+                      key={`${name}-${idx}`}
+                      draggable={!isAssigned}
+                      onDragStart={e => {
+                        if (!isAssigned) {
+                          handleChipDragStart(e, name);
+                        }
+                      }}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all select-none group ${
+                        isAssigned
+                          ? 'bg-slate-100 border border-dashed border-slate-300 text-slate-400 opacity-60 cursor-not-allowed shadow-none'
+                          : 'bg-white border border-slate-200 text-slate-800 shadow-xs hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20 hover:bg-brand-50/40 cursor-grab active:cursor-grabbing'
+                      }`}
+                      title={
+                        isAssigned
+                          ? 'Already assigned to a team. Cannot drag from here. Move or remove from team card instead.'
+                          : 'Drag and drop this person into any team on the right'
+                      }
                     >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
+                      {!isAssigned ? (
+                        <div className="p-0.5 rounded text-brand-600 bg-brand-50 group-hover:bg-brand-100 transition-colors">
+                          <GripVertical className="w-3 h-3 stroke-[2.5]" />
+                        </div>
+                      ) : (
+                        <span className="p-0.5 text-emerald-600 font-bold" title="In Team">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </span>
+                      )}
+
+                      <span className={`font-semibold ${isAssigned ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                        {name}
+                      </span>
+
+                      {isAssigned && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          In Team
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveChip(idx)}
+                        className="ml-0.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-full p-0.5 transition-colors"
+                        title="Remove name from roster"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
           <div className="mt-2 text-[11px] text-slate-500 flex items-center justify-between">
-            <span className="text-brand-600 font-medium">💡 Drag any card into a team on the right</span>
+            <span className="text-brand-600 font-medium">💡 Drag unassigned cards into a team on the right</span>
             <button
               type="button"
               onClick={() => setActiveTab('text')}

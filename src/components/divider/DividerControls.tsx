@@ -19,16 +19,13 @@ export const DividerControls: React.FC<DividerControlsProps> = ({
   value,
   onValueChange,
   onGenerate,
-  maxTeams = 30,
 }) => {
-  const safeMax = Math.max(10, maxTeams);
-
   const handleDecrement = () => {
     if (value > 1) onValueChange(value - 1);
   };
 
   const handleIncrement = () => {
-    if (value < safeMax) onValueChange(value + 1);
+    onValueChange(value + 1);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,19 +36,11 @@ export const DividerControls: React.FC<DividerControlsProps> = ({
     }
     const parsed = parseInt(rawVal, 10);
     if (!isNaN(parsed)) {
-      const bounded = Math.max(1, Math.min(safeMax, parsed));
-      onValueChange(bounded);
+      onValueChange(Math.max(1, parsed));
     }
   };
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsed = parseInt(e.target.value, 10);
-    if (!isNaN(parsed)) {
-      onValueChange(Math.max(1, Math.min(safeMax, parsed)));
-    }
-  };
-
-  const presets = mode === 'by-teams' ? [2, 3, 4, 5, 8] : [2, 3, 4, 5, 10];
+  const presets = mode === 'by-teams' ? [2, 3, 4, 5, 8, 10] : [2, 3, 4, 5, 8, 10];
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-5">
@@ -88,13 +77,13 @@ export const DividerControls: React.FC<DividerControlsProps> = ({
         </div>
       </div>
 
-      {/* Stepper + Direct Input + Slider Control */}
+      {/* Stepper + Direct Number Input (No Upper Bound Limit) */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             {mode === 'by-teams' ? 'Total Teams Needed' : 'Target Team Size'}
           </label>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap">
             {presets.map(p => (
               <button
                 key={p}
@@ -132,15 +121,14 @@ export const DividerControls: React.FC<DividerControlsProps> = ({
               <input
                 type="number"
                 min={1}
-                max={safeMax}
                 value={value}
                 onChange={handleInputChange}
-                className="w-20 text-center text-3xl font-extrabold text-slate-900 bg-transparent border-b-2 border-transparent focus:border-brand-500 focus:outline-none p-0 leading-tight [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-text selection:bg-brand-100"
-                title="Click to type a custom number"
+                className="w-24 text-center text-3xl font-extrabold text-slate-900 bg-transparent border-b-2 border-transparent focus:border-brand-500 focus:outline-none p-0 leading-tight [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-text selection:bg-brand-100"
+                title="Type any custom number"
               />
             </div>
-            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-              {mode === 'by-teams' ? 'Teams' : 'Members / Team'} (Type or slide)
+            <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block mt-0.5">
+              {mode === 'by-teams' ? 'Teams' : 'Members / Team'} (Type any number)
             </span>
           </div>
 
@@ -149,30 +137,11 @@ export const DividerControls: React.FC<DividerControlsProps> = ({
             variant="outline"
             size="sm"
             onClick={handleIncrement}
-            disabled={value >= safeMax}
             className="w-10 h-10 p-0 rounded-lg shrink-0 text-slate-700 hover:bg-white hover:text-brand-600"
             aria-label="Increase"
           >
             <Plus className="w-4 h-4" />
           </Button>
-        </div>
-
-        {/* Range Slider for Smooth Adjustments */}
-        <div className="pt-1 px-1">
-          <input
-            type="range"
-            min={1}
-            max={safeMax}
-            value={value}
-            onChange={handleSliderChange}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600 hover:accent-brand-700 focus:outline-none transition-all"
-            aria-label="Slider adjustment"
-          />
-          <div className="flex justify-between text-[10px] text-slate-400 font-medium mt-1">
-            <span>1</span>
-            <span>{Math.round(safeMax / 2)}</span>
-            <span>{safeMax} max</span>
-          </div>
         </div>
       </div>
 

@@ -103,6 +103,17 @@ function IndexPage() {
     return dupes;
   }, [parsedNames]);
 
+  // Calculate how many times each name has been assigned to teams
+  const assignedCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const team of teams) {
+      for (const member of team.members) {
+        counts.set(member, (counts.get(member) || 0) + 1);
+      }
+    }
+    return counts;
+  }, [teams]);
+
   const generatorTopRef = useRef<HTMLDivElement>(null);
   const gridExportRef = useRef<HTMLDivElement>(null);
 
@@ -208,6 +219,7 @@ function IndexPage() {
               onRestoreSample={handleRestoreSample}
               onClear={handleClear}
               duplicatesCount={duplicatesCount}
+              assignedCounts={assignedCounts}
             />
 
             <DividerControls
@@ -216,7 +228,6 @@ function IndexPage() {
               value={val}
               onValueChange={setVal}
               onGenerate={handleGenerate}
-              maxTeams={Math.max(2, parsedNames.length || 20)}
             />
           </div>
 

@@ -3,6 +3,7 @@ import { TeamResult } from '../../data/types';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Users, Copy, Check, Lock, Unlock, GripVertical, Pencil } from 'lucide-react';
+import { setCustomDragGhost } from '../../lib/drag-helper';
 
 export interface DividedTeamsGridProps {
   teams: TeamResult[];
@@ -103,6 +104,9 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
     e.dataTransfer.setData('application/json', JSON.stringify(payload));
     e.dataTransfer.setData('text/plain', name);
     e.dataTransfer.effectAllowed = 'move';
+
+    // Set ultra-visible theme-colored drag ghost
+    setCustomDragGhost(e, name, 'Moving');
   };
 
   const handleTeamDragOver = (e: React.DragEvent, teamIndex: number) => {
