@@ -103,13 +103,15 @@ random-team-generator/
 │   │   │   ├── RosterInput.tsx      # 名单多行输入与清洗工具条
 │   │   │   ├── DividerControls.tsx  # 模式切换(按队数/按人数)与步进器
 │   │   │   ├── DividedTeamsGrid.tsx # 分组卡片网格响应式展示
-│   │   │   └── DividerActions.tsx   # 洗牌、复制文本、分享链接、导出图片
+│   │   │   ├── DividerActions.tsx   # 洗牌、复制文本、分享链接、导出图片
+│   │   │   └── CaseShowcase.tsx     # 精品页2.0：真实场景案例列表与一键套用 (5v5/课堂/团建/桌游)
 │   │   ├── picker/                  # 选队器专有组件
 │   │   │   ├── LeaguePickerHeader.tsx # 联赛信息与分区快速筛选条 (All/AFC/NFC等)
 │   │   │   ├── PickerModeSwitch.tsx   # 模式切换 (Card Draw vs Draft Order Table)
 │   │   │   ├── TeamCardDraw.tsx       # 翻牌单队抽取卡片与排除机制
 │   │   │   ├── DraftOrderTable.tsx    # 1~32 顺位打乱表格
-│   │   │   └── SportsPickerActions.tsx# 重新抽取/洗牌、复制、分享
+│   │   │   ├── SportsPickerActions.tsx# 重新抽取/洗牌、复制、分享
+│   │   │   └── SportsCaseShowcase.tsx # 精品页2.0：Fantasy选秀顺位与对局案例展示
 │   │   ├── seo/                     # SEO 专用组件
 │   │   │   ├── FaqSection.tsx       # PAA 折叠问答模块
 │   │   │   ├── HowToSection.tsx     # 图文使用教程
@@ -152,7 +154,14 @@ random-team-generator/
 2. **分组计算与余数均衡**：
    * **按队伍数划分（By Number of Teams）**：指定 $K$ 队，总人数 $N$。
    * **按每队人数划分（By Team Size）**：指定每队 $S$ 人，队伍数 $K = \lceil N / S \rceil$。
-   * **轮转余数分配**：打乱后通过 `index % K` 依次塞入对应队伍，确保任何两队的成员差值最大不超过 1（例如 10 人分 3 队分配为 4, 3, 3，绝不允许出现 4, 4, 2）。
+3. **CaseShowcase（精选场景案例库与一键套用）**：
+   * 展示 4 个高频真实场景卡片：
+     1. **🏀 5v5 Pickup Game**：10 人名单，自动分为 2 队（Team Blue vs Team Red，各 5 人）；
+     2. **🏫 Classroom Project Groups**：16 位学生名单，精准分为 4 个小组（每组 4 人）；
+     3. **🎉 Team Building Icebreaker**：12 位员工名单，分为 3 支趣味破冰队伍；
+     4. **🎲 Trivia / Board Game Night**：8 位朋友名单，快速分为 2 组对抗阵营。
+   * 每个案例卡片展示：场景描述、名单预览、预生成结果预览，以及显式的 `[Load & Shuffle]` 按钮。
+   * **交互动效**：用户点击 `Load & Shuffle`，页面平滑滚动回顶部分队器，自动注入案例名单、切换参数并执行一次洗牌动画，极大拉高用户在页停留时间与交互率（Engaged Session）。
 
 ---
 
@@ -185,6 +194,10 @@ export interface SportsTeam {
    * 支持一键 `Copy Order List`（格式化为带序号的文本列表，便于直接发送给 Fantasy 盟友）。
 3. **分区快速过滤**：
    * 标签栏允许只在特定分区池子内进行抽选（如只在 AFC 16 支球队中抽取）。
+4. **SportsCaseShowcase（体育玩法案例展示）**：
+   * 展示 10-Team Fantasy Draft Order Showcase（真实 10 人梦幻联赛选秀顺位模拟案例）；
+   * 展示 Console Game Matchup Challenge（Madden / 2K 游戏随机选队对决案例）；
+   * 为页面注入深厚的高价值体育实体关键词，降低跳出率。
 
 ---
 
