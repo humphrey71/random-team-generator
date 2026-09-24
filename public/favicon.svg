@@ -1,9 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Rounded Background -->
+  <!-- Rounded Solid Background -->
   <rect width="64" height="64" rx="16" fill="#4F46E5" />
-  
-  <!-- Subtle Gradient Glow -->
-  <circle cx="20" cy="20" r="28" fill="#6366F1" opacity="0.6" />
   
   <!-- Team Nodes -->
   <!-- Top Node (Squad A) -->
