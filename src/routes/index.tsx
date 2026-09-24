@@ -13,7 +13,7 @@ import { SchemaScript } from '../components/seo/SchemaScript';
 import { InternalLinkHub } from '../components/seo/InternalLinkHub';
 import { divideTeams, parseTiersInput } from '../lib/team-divider';
 import { DividerMode, TeamResult, PlayerTier } from '../data/types';
-import { Trophy, ShieldCheck, Zap } from 'lucide-react';
+import { Trophy, ShieldCheck, Zap, Lock, Layers } from 'lucide-react';
 
 const DEFAULT_SAMPLE_NAMES = [
   'Alex', 'Blake', 'Chris', 'Dana', 'Evan',
@@ -31,7 +31,15 @@ const HOME_FAQ_ITEMS = [
   },
   {
     question: 'Can I balance teams based on player skill levels?',
-    answer: 'Yes! For competitive balance, we recommend dividing players into tiers (e.g., Tier 1 captains, Tier 2 intermediates). Generate one group first, then run the tool for subsequent tiers to distribute top talent evenly across teams.',
+    answer: 'Yes! Click "Add Tier" to create multiple skill levels (e.g., Tier 1 Captains, Tier 2 Intermediates, Tier 3 Beginners). When generated, our algorithm shuffles each tier independently and distributes players evenly across squads, ensuring every team gets a fair share of top talent.',
+  },
+  {
+    question: 'Can I lock a captain or specific player to a team across reshuffles?',
+    answer: 'Yes! Hover over any player in a generated team and click the Lock icon to pin them. When you click "Rerun", pinned players stay locked in their designated team and slot, while unpinned players are reshuffled randomly.',
+  },
+  {
+    question: 'Can I manually drag and adjust players after generating teams?',
+    answer: 'Yes. You can drag and drop players between teams or reorder their position within a team. You can also drag unassigned players directly from your roster into any squad.',
   },
   {
     question: 'Is there a limit on how many names I can enter?',
@@ -320,9 +328,9 @@ function IndexPage() {
         </div>
 
         {/* Feature Highlights Pills */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
-            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -333,24 +341,35 @@ function IndexPage() {
             </div>
           </div>
           <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-              <Zap className="w-5 h-5" />
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+              <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Remainder Balanced</h3>
+              <h3 className="text-sm font-bold text-slate-900">Skill-Tier Balancing</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Odd participant numbers are distributed with maximum 1-member variance across teams.
+                Group players by experience (Captains, Novices) to guarantee balanced talent.
               </p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
-            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+            <div className="p-2 bg-amber-50 text-amber-600 rounded-lg shrink-0">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Pin &amp; Lock Anchors</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Lock team captains in place while freely reshuffling remaining squad spots.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-200">
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg shrink-0">
               <Trophy className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900">Instant Export</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Copy markdown tables or download high-res PNG cards for chat and Discord.
+                Copy markdown tables or download high-res PNG cards for Discord and Slack.
               </p>
             </div>
           </div>
@@ -402,18 +421,18 @@ function IndexPage() {
           steps={[
             {
               number: '1',
-              title: 'Paste or Enter Names',
-              description: 'Type or paste your participant list into the text box. The tool automatically detects newlines, commas, and tabs, while filtering out empty lines.',
+              title: 'Paste Names or Add Skill Tiers',
+              description: 'Type or paste names directly, or click "Add Tier" to categorize players by skill (e.g. Captains, Beginners) for balanced rosters.',
             },
             {
               number: '2',
               title: 'Select Grouping Method',
-              description: 'Choose whether you want a specific number of teams (e.g. 3 teams) or a maximum number of members per team (e.g. 4 players per squad).',
+              description: 'Choose whether you want a specific number of teams or a squad size, then click "Generate Teams" for an instant, mathematically fair distribution.',
             },
             {
               number: '3',
-              title: 'Generate & Export',
-              description: 'Click "Generate Random Teams" for an instant split. Rerun the shuffle, copy clean markdown tables, or download high-resolution PNG image cards.',
+              title: 'Fine-Tune, Lock & Export',
+              description: 'Drag players between teams to adjust, click the lock icon to pin key anchors across reshuffles, and export clean PNG image cards.',
             },
           ]}
         />
