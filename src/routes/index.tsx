@@ -47,7 +47,7 @@ const HOME_FAQ_ITEMS = [
   },
   {
     question: 'Can I save or share my team split results?',
-    answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, copy a persistent shareable URL, or export a formatted PNG image card with a single click.',
+    answer: 'Yes! You can instantly copy formatted text to paste into Discord or Slack, or export a formatted PNG image card with a single click.',
   },
   {
     question: 'Does this random team generator work offline and on mobile?',

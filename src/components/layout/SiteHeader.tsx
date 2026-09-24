@@ -1,10 +1,42 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Users, Trophy, Menu, X } from 'lucide-react';
+import { Users, Trophy, Menu, X, Share2, Check } from 'lucide-react';
 import { Container } from './Container';
 
 export const SiteHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [shared, setShared] = useState(false);
+
+  const handleShare = async () => {
+    const cleanUrl = typeof window !== 'undefined'
+      ? `${window.location.origin}${window.location.pathname}`
+      : 'https://teamgenerator.org/';
+
+    const shareData = {
+      title: 'Random Team Generator - Fair & Fast Group Maker',
+      text: 'Easily split any list of names into balanced, randomized teams in seconds!',
+      url: cleanUrl,
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // user cancelled or failed, fallback to clipboard
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(cleanUrl);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      } catch {
+        // fallback
+      }
+    }
+  };
 
   const navItems = [
     { label: 'Team Divider', to: '/', icon: Users },
@@ -36,15 +68,37 @@ export const SiteHeader: React.FC = () => {
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden">
+          {/* Header Right Actions */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
-              aria-label="Toggle menu"
+              type="button"
+              onClick={handleShare}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-brand-600 bg-slate-100/80 hover:bg-brand-50 border border-slate-200/80 hover:border-brand-300 rounded-lg transition-all"
+              title="Share this tool"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {shared ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700 font-bold">Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Share</span>
+                </>
+              )}
             </button>
+
+            {/* Mobile Menu Button */}
+            <div className="flex md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
 

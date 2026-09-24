@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TeamResult } from '../../data/types';
 import { Button } from '../ui/Button';
-import { Copy, Check, Share2, Download, RefreshCw, Trash2 } from 'lucide-react';
+import { Copy, Check, Download, RefreshCw, Trash2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 
 export interface DividerActionsProps {
@@ -20,7 +20,6 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
   memberTierMap,
 }) => {
   const [copiedText, setCopiedText] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   const formatTeamsText = (): string => {
@@ -44,16 +43,6 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
       await navigator.clipboard.writeText(text);
       setCopiedText(true);
       setTimeout(() => setCopiedText(false), 2000);
-    } catch {
-      // fallback
-    }
-  };
-
-  const handleShareLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
     } catch {
       // fallback
     }
@@ -129,26 +118,6 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
             <>
               <Copy className="w-3.5 h-3.5 mr-1" />
               Copy Text
-            </>
-          )}
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleShareLink}
-          title="Copy shareable link with current configuration"
-        >
-          {copiedLink ? (
-            <>
-              <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
-              <span className="text-emerald-700">Link Copied!</span>
-            </>
-          ) : (
-            <>
-              <Share2 className="w-3.5 h-3.5 mr-1" />
-              Share Link
             </>
           )}
         </Button>
