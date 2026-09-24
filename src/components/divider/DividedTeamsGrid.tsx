@@ -10,6 +10,7 @@ export interface DividedTeamsGridProps {
   onTeamsChange?: (teams: TeamResult[]) => void;
   onToggleLock?: (teamIndex: number, memberIndex: number) => void;
   containerRef?: React.RefObject<HTMLDivElement>;
+  memberTierMap?: Record<string, string>;
 }
 
 const TEAM_COLOR_THEMES = [
@@ -28,6 +29,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
   onTeamsChange,
   onToggleLock,
   containerRef,
+  memberTierMap,
 }) => {
   const [copiedTeamId, setCopiedTeamId] = useState<number | null>(null);
   const [activeDropTeamIndex, setActiveDropTeamIndex] = useState<number | null>(null);
@@ -67,7 +69,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
       `${team.name} (${team.members.length} members):\n` +
       team.members
         .map((m, i) => {
-          const tier = team.memberTiers?.[m];
+          const tier = memberTierMap?.[m] || team.memberTiers?.[m];
           return `${i + 1}. ${m}${tier ? ` (${tier})` : ''}`;
         })
         .join('\n');
@@ -565,12 +567,12 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                               >
                                 {member}
                               </span>
-                              {team.memberTiers?.[member] && (
+                              {(memberTierMap?.[member] || team.memberTiers?.[member]) && (
                                 <span
                                   className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200/80 shrink-0 ml-1.5"
-                                  title={`Skill Tier: ${team.memberTiers[member]}`}
+                                  title={`Skill Tier: ${memberTierMap?.[member] || team.memberTiers?.[member]}`}
                                 >
-                                  {team.memberTiers[member]}
+                                  {memberTierMap?.[member] || team.memberTiers?.[member]}
                                 </span>
                               )}
                             </div>

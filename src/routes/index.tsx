@@ -96,8 +96,33 @@ function IndexPage() {
     return tiers.flatMap(t => t.names);
   }, [tiers]);
 
+  const memberTierMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const t of tiers) {
+      for (const n of t.names) {
+        map[n] = t.name;
+      }
+    }
+    return map;
+  }, [tiers]);
+
   const handleTiersChange = (newTiers: PlayerTier[]) => {
     setTiers(newTiers);
+    const newMap: Record<string, string> = {};
+    for (const t of newTiers) {
+      for (const n of t.names) {
+        newMap[n] = t.name;
+      }
+    }
+    setTeams(prevTeams =>
+      prevTeams.map(team => ({
+        ...team,
+        memberTiers: {
+          ...(team.memberTiers || {}),
+          ...newMap,
+        },
+      }))
+    );
   };
 
   const handleRawTextChange = (text: string) => {
@@ -281,6 +306,7 @@ function IndexPage() {
               onRerun={handleGenerate}
               onClear={() => setTeams([])}
               exportElementRef={gridExportRef}
+              memberTierMap={memberTierMap}
             />
 
             <DividedTeamsGrid
@@ -288,6 +314,7 @@ function IndexPage() {
               onTeamsChange={handleTeamsChange}
               onToggleLock={handleToggleLock}
               containerRef={gridExportRef}
+              memberTierMap={memberTierMap}
             />
           </div>
         </div>

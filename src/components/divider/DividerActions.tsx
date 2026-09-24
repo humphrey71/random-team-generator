@@ -9,6 +9,7 @@ export interface DividerActionsProps {
   onRerun: () => void;
   onClear?: () => void;
   exportElementRef?: React.RefObject<HTMLDivElement>;
+  memberTierMap?: Record<string, string>;
 }
 
 export const DividerActions: React.FC<DividerActionsProps> = ({
@@ -16,6 +17,7 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
   onRerun,
   onClear,
   exportElementRef,
+  memberTierMap,
 }) => {
   const [copiedText, setCopiedText] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -26,7 +28,7 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
       .map(team => {
         const memberList = team.members
           .map((m, i) => {
-            const tier = team.memberTiers?.[m];
+            const tier = memberTierMap?.[m] || team.memberTiers?.[m];
             return `  ${i + 1}. ${m}${tier ? ` (${tier})` : ''}`;
           })
           .join('\n');
