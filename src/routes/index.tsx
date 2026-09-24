@@ -289,7 +289,7 @@ function IndexPage() {
           </div>
 
           {/* Right Column (Desktop 7 cols, XL 8 cols): Live Generated Teams & Export Bar */}
-          <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-2">
               <div className="flex items-center gap-2">
                 <div className="text-lg font-bold text-slate-900 tracking-tight">

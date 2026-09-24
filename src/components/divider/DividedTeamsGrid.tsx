@@ -385,8 +385,12 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
     teams.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2';
 
   return (
-    <div ref={containerRef} className="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 box-border">
-      <div className={`grid ${gridLayoutClass} gap-5`}>
+    <div className="w-full">
+      <div
+        ref={containerRef}
+        className="!m-0 p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 box-border"
+      >
+        <div className={`grid ${gridLayoutClass} gap-5`}>
         {teams.map((team, tIdx) => {
           const theme = TEAM_COLOR_THEMES[tIdx % TEAM_COLOR_THEMES.length];
           const isCopied = copiedTeamId === team.id;
@@ -632,5 +636,6 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
         })}
       </div>
     </div>
-  );
+  </div>
+);
 };
