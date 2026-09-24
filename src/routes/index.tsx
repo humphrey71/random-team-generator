@@ -198,7 +198,7 @@ function IndexPage() {
 
   const handleApplyScenario = (scenario: ScenarioPreset) => {
     const newTiers: PlayerTier[] = [
-      { id: 'tier-1', name: 'Tier 1', names: scenario.names },
+      { id: 'tier-1', name: '', names: scenario.names },
     ];
     setTiers(newTiers);
     setRawText(scenario.names.join('\n'));
@@ -222,7 +222,7 @@ function IndexPage() {
 
   const handleRestoreSample = () => {
     const sampleTiers: PlayerTier[] = [
-      { id: 'tier-1', name: 'Tier 1', names: DEFAULT_SAMPLE_NAMES },
+      { id: 'tier-1', name: '', names: DEFAULT_SAMPLE_NAMES },
     ];
     setTiers(sampleTiers);
     setRawText(DEFAULT_SAMPLE_NAMES.join('\n'));
@@ -232,7 +232,7 @@ function IndexPage() {
   };
 
   const handleClear = () => {
-    const emptyTiers: PlayerTier[] = [{ id: 'tier-1', name: 'Tier 1', names: [] }];
+    const emptyTiers: PlayerTier[] = [{ id: 'tier-1', name: '', names: [] }];
     setTiers(emptyTiers);
     setRawText('');
     setTeams([]);

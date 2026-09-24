@@ -69,7 +69,8 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
       `${team.name} (${team.members.length} members):\n` +
       team.members
         .map((m, i) => {
-          const tier = memberTierMap?.[m] || team.memberTiers?.[m];
+          const rawTier = memberTierMap?.[m] || team.memberTiers?.[m];
+          const tier = rawTier && rawTier.trim() ? rawTier.trim() : null;
           return `${i + 1}. ${m}${tier ? ` (${tier})` : ''}`;
         })
         .join('\n');
@@ -567,14 +568,19 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                               >
                                 {member}
                               </span>
-                              {(memberTierMap?.[member] || team.memberTiers?.[member]) && (
-                                <span
-                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200/80 shrink-0 ml-1.5"
-                                  title={`Skill Tier: ${memberTierMap?.[member] || team.memberTiers?.[member]}`}
-                                >
-                                  {memberTierMap?.[member] || team.memberTiers?.[member]}
-                                </span>
-                              )}
+                              {(() => {
+                                const rawTier = memberTierMap?.[member] || team.memberTiers?.[member];
+                                const tierName = rawTier && rawTier.trim() ? rawTier.trim() : null;
+                                if (!tierName) return null;
+                                return (
+                                  <span
+                                    className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200/80 shrink-0 ml-1.5"
+                                    title={`Skill Tier: ${tierName}`}
+                                  >
+                                    {tierName}
+                                  </span>
+                                );
+                              })()}
                             </div>
 
                             {/* Member Right Tools: Lock / Pin Button */}

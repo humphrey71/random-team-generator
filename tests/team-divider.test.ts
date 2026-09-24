@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { divideTeams, parseNamesInput } from '../src/lib/team-divider';
+import { divideTeams, parseNamesInput, parseTiersInput } from '../src/lib/team-divider';
 
 describe('parseNamesInput', () => {
   it('should parse names separated by newlines, commas, and chinese commas', () => {
@@ -110,6 +110,32 @@ describe('divideTeams', () => {
     // memberTiers dictionary should map each person to their tier name
     expect(teams[0].memberTiers?.['Captain A']).toBe('Captains');
     expect(teams[0].memberTiers?.['P1']).toBe('Players');
+  });
+
+  it('should default single tier to empty name and still balance properly when tier names are empty', () => {
+    // 1. Unnamed single tier from raw text
+    const defaultTiers = parseTiersInput('Alice\nBob\nCharlie\nDavid');
+    expect(defaultTiers).toHaveLength(1);
+    expect(defaultTiers[0].name).toBe('');
+
+    // 2. Unnamed multi-tiers (empty names)
+    const unnamedMultiTiers = [
+      { id: 't1', name: '', names: ['VIP 1', 'VIP 2'] },
+      { id: 't2', name: '', names: ['P 1', 'P 2', 'P 3', 'P 4'] },
+    ];
+    const teams = divideTeams(unnamedMultiTiers, 'by-teams', 2);
+    expect(teams).toHaveLength(2);
+    expect(teams[0].members).toHaveLength(3);
+    expect(teams[1].members).toHaveLength(3);
+
+    // Each team still receives exactly 1 VIP even though tier name is empty
+    const vipsIn0 = teams[0].members.filter(m => m.startsWith('VIP'));
+    const vipsIn1 = teams[1].members.filter(m => m.startsWith('VIP'));
+    expect(vipsIn0).toHaveLength(1);
+    expect(vipsIn1).toHaveLength(1);
+
+    // Tier name is empty string, so results will not display any badge
+    expect(teams[0].memberTiers?.['VIP 1']).toBe('');
   });
 });
 

@@ -28,7 +28,8 @@ export const DividerActions: React.FC<DividerActionsProps> = ({
       .map(team => {
         const memberList = team.members
           .map((m, i) => {
-            const tier = memberTierMap?.[m] || team.memberTiers?.[m];
+            const rawTier = memberTierMap?.[m] || team.memberTiers?.[m];
+            const tier = rawTier && rawTier.trim() ? rawTier.trim() : null;
             return `  ${i + 1}. ${m}${tier ? ` (${tier})` : ''}`;
           })
           .join('\n');

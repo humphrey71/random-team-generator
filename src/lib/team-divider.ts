@@ -27,12 +27,26 @@ export function parseNamesInput(raw: string): string[] {
  */
 export function parseTiersInput(raw: string): PlayerTier[] {
   if (!raw || !raw.trim()) {
-    return [{ id: 'tier-1', name: 'Tier 1', names: [] }];
+    return [{ id: 'tier-1', name: '', names: [] }];
   }
 
   const lines = raw.split(/\r?\n/);
-  const tierHeaderRegex = /^(?:#+\s*|={2,}\s*|\[)(.+?)(?:\s*={2,}|\]|:)?$/;
+  const tierHeaderRegex = /^(?:#+\s*|={2,}\s*|\[)(.*?)(?:\s*={2,}|\]|:)?$/;
   const tiers: PlayerTier[] = [];
+
+  let hasHeaders = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('#') || trimmed.startsWith('==') || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+      hasHeaders = true;
+      break;
+    }
+  }
+
+  // If no tier headers exist, wrap all names in a default unnamed single tier
+  if (!hasHeaders) {
+    return [{ id: 'tier-1', name: '', names: parseNamesInput(raw) }];
+  }
 
   let currentTierName: string | null = null;
   let currentNames: string[] = [];
@@ -42,19 +56,17 @@ export function parseTiersInput(raw: string): PlayerTier[] {
     if (!trimmed) continue;
 
     const match = trimmed.match(tierHeaderRegex);
-    // If line looks like a tier header (starts with # or === or [)
     if (match && (trimmed.startsWith('#') || trimmed.startsWith('=') || trimmed.startsWith('['))) {
       if (currentTierName !== null || currentNames.length > 0) {
         tiers.push({
           id: `tier-${tiers.length + 1}-${Date.now()}`,
-          name: currentTierName || `Tier ${tiers.length + 1}`,
+          name: (currentTierName ?? '').trim(),
           names: currentNames,
         });
         currentNames = [];
       }
-      currentTierName = match[1].trim() || `Tier ${tiers.length + 1}`;
+      currentTierName = match[1] ? match[1].trim() : '';
     } else {
-      // Ordinary name tokens on this line (supports comma separation on same line)
       const parsed = parseNamesInput(trimmed);
       currentNames.push(...parsed);
     }
@@ -64,7 +76,7 @@ export function parseTiersInput(raw: string): PlayerTier[] {
   if (currentTierName !== null || currentNames.length > 0 || tiers.length === 0) {
     tiers.push({
       id: `tier-${tiers.length + 1}-${Date.now()}`,
-      name: currentTierName || `Tier ${tiers.length + 1}`,
+      name: (currentTierName ?? '').trim(),
       names: currentNames,
     });
   }
@@ -74,16 +86,19 @@ export function parseTiersInput(raw: string): PlayerTier[] {
 
 /**
  * Serializes PlayerTier[] back into text.
- * When there's only 1 tier named "Tier 1", outputs clean newline-separated names.
+ * When there's only 1 tier with empty name, outputs clean newline-separated names.
  */
 export function serializeTiersToText(tiers: PlayerTier[]): string {
   if (tiers.length === 0) return '';
-  if (tiers.length === 1 && tiers[0].name.toLowerCase() === 'tier 1') {
+  if (tiers.length === 1 && !tiers[0].name.trim()) {
     return tiers[0].names.join('\n');
   }
 
   return tiers
-    .map(tier => `# ${tier.name}\n${tier.names.join('\n')}`)
+    .map((tier, idx) => {
+      const header = tier.name.trim() ? `# ${tier.name}` : `# Tier ${idx + 1}`;
+      return `${header}\n${tier.names.join('\n')}`;
+    })
     .join('\n\n');
 }
 

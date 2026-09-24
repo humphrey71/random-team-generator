@@ -53,15 +53,19 @@ export const RosterInput: React.FC<RosterInputProps> = ({
   const [editingTierName, setEditingTierName] = useState<string>('');
   const [tierInputTexts, setTierInputTexts] = useState<Record<string, string>>({});
 
-  // Add a new tier
+  // Add a new tier: if first tier is unnamed, give it 'Tier 1' when adding more tiers
   const handleAddTier = () => {
-    const newTierNumber = tiers.length + 1;
+    let baseTiers = [...tiers];
+    if (baseTiers.length === 1 && !baseTiers[0].name.trim()) {
+      baseTiers[0] = { ...baseTiers[0], name: 'Tier 1' };
+    }
+    const newTierNumber = baseTiers.length + 1;
     const newTier: PlayerTier = {
       id: `tier-${Date.now()}`,
       name: `Tier ${newTierNumber}`,
       names: [],
     };
-    const updated = [...tiers, newTier];
+    const updated = [...baseTiers, newTier];
     onTiersChange(updated);
     onRawTextChange(serializeTiersToText(updated));
   };
@@ -88,10 +92,10 @@ export const RosterInput: React.FC<RosterInputProps> = ({
     setEditingTierName(tier.name);
   };
 
-  // Save tier name
+  // Save tier name: allows empty name anytime to hide it in results!
   const handleSaveRename = (tierIndex: number) => {
     if (editingTierId === null) return;
-    const trimmed = editingTierName.trim() || `Tier ${tierIndex + 1}`;
+    const trimmed = editingTierName.trim();
     const updated = tiers.map((t, idx) =>
       idx === tierIndex ? { ...t, name: trimmed } : t
     );
@@ -357,8 +361,8 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                             }}
                             onBlur={() => handleSaveRename(tIdx)}
                             autoFocus
-                            className="px-2 py-0.5 text-xs font-bold text-slate-900 bg-white rounded border border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 w-32"
-                            placeholder="Tier name..."
+                            className="px-2 py-0.5 text-xs font-bold text-slate-900 bg-white rounded border border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 w-36"
+                            placeholder="Optional name..."
                           />
                           <button
                             type="button"
@@ -372,11 +376,17 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                         <div
                           onClick={() => handleStartRename(tier)}
                           className="group/name flex items-center gap-1.5 cursor-pointer rounded px-1.5 py-0.5 -ml-1.5 hover:bg-white transition-colors"
-                          title="Click to rename this tier"
+                          title="Click to rename tier (leave blank to hide in results)"
                         >
-                          <span className={`font-bold text-sm tracking-tight ${theme.text}`}>
-                            {tier.name}
-                          </span>
+                          {tier.name.trim() ? (
+                            <span className={`font-bold text-sm tracking-tight ${theme.text}`}>
+                              {tier.name}
+                            </span>
+                          ) : (
+                            <span className="font-medium text-sm tracking-tight text-slate-400 italic">
+                              {tiers.length > 1 ? `Tier ${tIdx + 1} (No label)` : 'Tier 1 (No label)'}
+                            </span>
+                          )}
                           <Pencil className="w-3 h-3 text-slate-400 group-hover/name:text-brand-600 transition-colors" />
                         </div>
                       )}
@@ -484,7 +494,11 @@ export const RosterInput: React.FC<RosterInputProps> = ({
                           handleQuickAddPlayer(tIdx);
                         }
                       }}
-                      placeholder={`Add player to ${tier.name} (press Enter)...`}
+                      placeholder={
+                        tier.name.trim()
+                          ? `Add player to ${tier.name} (press Enter)...`
+                          : `Add player to this tier (press Enter)...`
+                      }
                       className="flex-1 px-2.5 py-1 text-xs bg-white border border-slate-200 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all"
                     />
                     <button
