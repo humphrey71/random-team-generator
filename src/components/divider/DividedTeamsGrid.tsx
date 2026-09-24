@@ -400,7 +400,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
               onDragOver={e => handleTeamDragOver(e, tIdx)}
               onDragLeave={handleTeamDragLeave}
               onDrop={e => executeMove(tIdx, null, e)}
-              className={`border transition-all duration-200 bg-white flex flex-col justify-between overflow-hidden relative ${
+              className={`group border transition-all duration-200 bg-white flex flex-col justify-between overflow-hidden relative ${
                 isDragOver
                   ? 'border-brand-500 ring-4 ring-brand-500/25 bg-brand-50/20 shadow-xl scale-[1.01]'
                   : `${theme.border} hover:shadow-md`
@@ -448,7 +448,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                         <span className="font-bold text-base text-slate-900 tracking-tight truncate">
                           {team.name}
                         </span>
-                        <Pencil className="w-3.5 h-3.5 text-slate-400 group-hover/name:text-brand-600 transition-colors shrink-0" />
+                        <Pencil className="w-3.5 h-3.5 text-slate-400 group-hover:opacity-100 hover:text-brand-600 opacity-0 transition-opacity shrink-0" />
                       </div>
                     )}
                   </div>
@@ -464,7 +464,9 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                     <button
                       type="button"
                       onClick={() => handleCopySingleTeam(team)}
-                      className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-white/80 transition-colors"
+                      className={`p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-white/80 transition-all ${
+                        isCopied ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
                       title="Copy this team roster"
                     >
                       {isCopied ? (
@@ -603,7 +605,7 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                                 className={`p-1.5 rounded-md transition-all ${
                                   isLocked
                                     ? 'text-amber-700 hover:bg-amber-200/60'
-                                    : 'text-slate-400 hover:text-brand-600 hover:bg-brand-50'
+                                    : 'text-slate-400 hover:text-brand-600 hover:bg-brand-50 opacity-0 group-hover:opacity-100'
                                 }`}
                                 title={
                                   isLocked
@@ -624,22 +626,6 @@ export const DividedTeamsGrid: React.FC<DividedTeamsGridProps> = ({
                     </ol>
                   )}
                 </div>
-              </div>
-
-              {/* Bottom Bar */}
-              <div className="px-5 py-2.5 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-                <span>
-                  {team.lockedIndices && team.lockedIndices.length > 0
-                    ? `${team.lockedIndices.length} position(s) pinned`
-                    : 'Click name to rename • Drag to reorder'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleCopySingleTeam(team)}
-                  className="hover:text-brand-600 font-medium transition-colors"
-                >
-                  {isCopied ? 'Copied!' : 'Copy names'}
-                </button>
               </div>
             </Card>
           );
