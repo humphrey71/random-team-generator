@@ -118,7 +118,8 @@ export function divideTeams(
   rawInput: string[] | PlayerTier[],
   mode: DividerMode,
   value: number,
-  previousTeams?: TeamResult[]
+  previousTeams?: TeamResult[],
+  shouldShuffle: boolean = true
 ): TeamResult[] {
   // Normalize input into PlayerTier[]
   let tiers: PlayerTier[];
@@ -232,8 +233,10 @@ export function divideTeams(
       }
     }
 
-    // Shuffle members within this tier
-    const shuffledTier = shuffleArray(tierUnlockedMembers);
+    // Shuffle members within this tier (or keep order for deterministic initial SSG rendering)
+    const shuffledTier = shouldShuffle
+      ? shuffleArray(tierUnlockedMembers)
+      : [...tierUnlockedMembers];
 
     for (const member of shuffledTier) {
       // Find candidate teams that have empty slots

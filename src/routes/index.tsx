@@ -94,10 +94,10 @@ function IndexPage() {
   const [mode, setMode] = useState<DividerMode>(search.mode || 'by-teams');
   const [val, setVal] = useState<number>(search.val || 2);
 
-  // Pre-seed initial render with balanced teams
+  // Pre-seed initial render with balanced teams (deterministic order for perfect SSG hydration)
   const [teams, setTeams] = useState<TeamResult[]>(() => {
     const initialTiers = parseTiersInput(initialRawText);
-    return divideTeams(initialTiers, search.mode || 'by-teams', search.val || 2);
+    return divideTeams(initialTiers, search.mode || 'by-teams', search.val || 2, undefined, false);
   });
 
   const parsedNames = useMemo(() => {
