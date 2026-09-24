@@ -19,7 +19,7 @@ export const SiteHeader: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand Name */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <img src="/logo.svg" alt="TeamGenerator.org" className="h-9 w-auto" />
+            <img src="/logo.svg" alt="TeamGenerator.org" className="h-12 w-auto" />
           </Link>
 
           {/* Desktop Navigation Links */}
