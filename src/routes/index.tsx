@@ -106,12 +106,34 @@ function IndexPage() {
   const generatorTopRef = useRef<HTMLDivElement>(null);
   const gridExportRef = useRef<HTMLDivElement>(null);
 
+  const handleToggleLock = (teamIndex: number, slotIndex: number) => {
+    setTeams(prevTeams => {
+      return prevTeams.map((team, tIdx) => {
+        if (tIdx !== teamIndex) return team;
+        const currentLocks = team.lockedIndices ? [...team.lockedIndices] : [];
+        const isLocked = currentLocks.includes(slotIndex);
+        const updatedLocks = isLocked
+          ? currentLocks.filter(idx => idx !== slotIndex)
+          : [...currentLocks, slotIndex].sort((a, b) => a - b);
+        return {
+          ...team,
+          lockedIndices: updatedLocks,
+        };
+      });
+    });
+  };
+
+  const handleTeamsChange = (updatedTeams: TeamResult[]) => {
+    setTeams(updatedTeams);
+  };
+
   const handleGenerate = () => {
     if (parsedNames.length === 0) {
       setTeams([]);
       return;
     }
-    const result = divideTeams(parsedNames, mode, val);
+    // Pass current teams to preserve pinned/locked member positions
+    const result = divideTeams(parsedNames, mode, val, teams);
     setTeams(result);
 
     // Update URL Search params for shareability
@@ -200,7 +222,7 @@ function IndexPage() {
 
           {/* Right Column (Desktop 7 cols, XL 8 cols): Live Generated Teams & Export Bar */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-4">
-            <div className="flex items-center justify-between pb-1 border-b border-slate-200">
+            <div className="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-2">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-slate-900 tracking-tight">
                   Generated Teams ({teams.length})
@@ -208,7 +230,15 @@ function IndexPage() {
                 <span className="text-xs text-slate-500 font-medium">
                   • {teams.reduce((s, t) => s + t.members.length, 0)} total participants
                 </span>
+                {teams.reduce((sum, t) => sum + (t.lockedIndices?.length || 0), 0) > 0 && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                    🔒 {teams.reduce((sum, t) => sum + (t.lockedIndices?.length || 0), 0)} pinned
+                  </span>
+                )}
               </div>
+              <span className="text-[11px] text-slate-400 hidden sm:inline">
+                Drag to reorder/move • Click 🔓 to pin position
+              </span>
             </div>
 
             <DividerActions
@@ -217,7 +247,12 @@ function IndexPage() {
               exportElementRef={gridExportRef}
             />
 
-            <DividedTeamsGrid teams={teams} containerRef={gridExportRef} />
+            <DividedTeamsGrid
+              teams={teams}
+              onTeamsChange={handleTeamsChange}
+              onToggleLock={handleToggleLock}
+              containerRef={gridExportRef}
+            />
           </div>
         </div>
 

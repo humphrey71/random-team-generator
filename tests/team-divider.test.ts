@@ -61,4 +61,33 @@ describe('divideTeams', () => {
     expect(teams[0].members).toHaveLength(1);
     expect(teams[1].members).toHaveLength(1);
   });
+
+  it('should preserve locked members at exact team and slot on subsequent shuffles', () => {
+    // Initial division: 10 people into 2 teams
+    const initialTeams = divideTeams(tenNames, 'by-teams', 2);
+    expect(initialTeams).toHaveLength(2);
+
+    // Lock the first person in Team 1 and third person in Team 2
+    const captain1 = initialTeams[0].members[0];
+    const captain2 = initialTeams[1].members[2];
+    initialTeams[0].lockedIndices = [0];
+    initialTeams[1].lockedIndices = [2];
+
+    // Run shuffle 10 times, captains must never move
+    for (let i = 0; i < 10; i++) {
+      const newTeams = divideTeams(tenNames, 'by-teams', 2, initialTeams);
+      expect(newTeams[0].members[0]).toBe(captain1);
+      expect(newTeams[0].lockedIndices).toContain(0);
+
+      expect(newTeams[1].members[2]).toBe(captain2);
+      expect(newTeams[1].lockedIndices).toContain(2);
+
+      // Total members should always be 10, 5 per team
+      expect(newTeams[0].members).toHaveLength(5);
+      expect(newTeams[1].members).toHaveLength(5);
+      const allMembers = newTeams.flatMap(t => t.members);
+      expect(new Set(allMembers)).toEqual(new Set(tenNames));
+    }
+  });
 });
+

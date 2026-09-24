@@ -2,6 +2,7 @@ export interface TeamResult {
   id: number;
   name: string;
   members: string[];
+  lockedIndices?: number[];
 }
 
 export type DividerMode = 'by-teams' | 'by-size';
